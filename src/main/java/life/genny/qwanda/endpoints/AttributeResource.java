@@ -37,7 +37,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.quarkus.security.identity.SecurityIdentity;
 import life.genny.notes.models.DataTable;
 import life.genny.notes.models.GennyToken;
-import life.genny.notes.models.Note;
 import life.genny.qwanda.attribute.Attribute;
 import life.genny.qwanda.message.QDataAttributeMessage;
 
@@ -232,7 +231,7 @@ public class AttributeResource {
 
             result.setRecordsFiltered(filteredDevice.count());
             result.setData(filteredDevice.list());
-            result.setRecordsTotal(Note.count());
+            result.setRecordsTotal(Attribute.count());
    
         return result;
 

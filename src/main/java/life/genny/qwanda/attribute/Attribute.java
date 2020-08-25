@@ -70,7 +70,7 @@ import life.genny.qwanda.datatype.DataType;
 
 @Entity
 @Cacheable
-@Table(name = "attribute")
+@Table(name = "qattribute")
 @RegisterForReflection
 public class Attribute extends PanacheEntity {
 
@@ -96,7 +96,7 @@ public class Attribute extends PanacheEntity {
 	@NotNull
 	@Size(max = 64)
 	@Pattern(regexp = REGEX_CODE, message = "Must be valid Code!")
-	@Column(name = "code", updatable = false, nullable = false)
+	@Column(name = "code", updatable = false, nullable = false, unique = true)
 	public String code;
 	
 	@NotNull

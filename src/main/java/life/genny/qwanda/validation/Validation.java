@@ -65,7 +65,7 @@ import life.genny.qwanda.converter.StringListConverter;
 
 @Entity
 @Cacheable
-@Table(name = "validation")
+@Table(name = "qvalidation")
 @RegisterForReflection
 public class Validation extends PanacheEntity {
 
