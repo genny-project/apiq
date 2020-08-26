@@ -1,16 +1,20 @@
 package life.genny.qwanda.message;
 
-import com.google.gson.annotations.Expose;
-
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import life.genny.qwanda.attribute.Attribute;
 
+@RegisterForReflection
 public class QDataAttributeMessage extends QDataMessage{
 
 	private static final long serialVersionUID = 1L;
-	@Expose
-	private Attribute[] items;
+	private Attribute[] items = new Attribute[0];
 	private static final String DATATYPE_ATTRIBUTE = Attribute.class.getSimpleName();
 
+	public QDataAttributeMessage()
+	{
+		super(DATATYPE_ATTRIBUTE);
+	}
+	
 	public QDataAttributeMessage(Attribute[] items) {
 		super(DATATYPE_ATTRIBUTE);
 		setItems(items);

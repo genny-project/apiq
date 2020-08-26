@@ -29,7 +29,7 @@ import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.quarkus.security.identity.SecurityIdentity;
-import life.genny.notes.models.GennyToken;
+import life.genny.qwanda.GennyToken;
 import life.genny.qwanda.attribute.Attribute;
 import life.genny.qwanda.datatype.DataType;
 import life.genny.qwanda.message.QDataAttributeMessage;

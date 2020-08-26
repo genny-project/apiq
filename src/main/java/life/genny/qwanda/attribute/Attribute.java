@@ -29,12 +29,15 @@ import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.jboss.logging.Logger;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
@@ -69,8 +72,14 @@ import life.genny.qwanda.datatype.DataType;
 
 
 @Entity
+@Table(name = "qattribute", 
+indexes = {
+        @Index(columnList = "code", name =  "code_idx"),
+        @Index(columnList = "realm", name = "code_idx")
+    },
+uniqueConstraints = @UniqueConstraint(columnNames = {"code", "realm"}))
 @Cacheable
-@Table(name = "qattribute")
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @RegisterForReflection
 public class Attribute extends PanacheEntity {
 

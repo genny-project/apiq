@@ -1,4 +1,4 @@
-package life.genny.notes.models;
+package life.genny.qwanda;
 
 
 import java.io.Serializable;

@@ -73,25 +73,25 @@ On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 if [ $# -eq 0 ]
 then
-   echo "usage: importAttributes.sh <url> <username> <password> <sourceurl>"
-   echo "e.g. ./importAttributes.sh http://localhost:8095 dev1 password1 https://internmatch-test.gada.io"
+   echo "usage: readAttributes.sh <url> <username> <password> "
+   echo "e.g. ./readAttributes.sh http://localhost:8096 dev1 password1 "
    exit;
 fi
 mydate=`date -u +"%Y-%m-%dT%H:%M:%S.000Z"`
 url=$1
 username=$2
 password=$3
-sourceurl=$4
 echo ${mydate}  $url ${sourceurl} ${username} ${password}
-KEYCLOAK_RESPONSE=`curl -s -X POST https://keycloak.gada.io/auth/realms/internmatch/protocol/openid-connect/token  -H "Content-Type: application/x-www-form-urlencoded" -d "username=${username}" -d "password=${password}" -d 'grant_type=password' -d 'client_id=alyson'  `
+KEYCLOAK_RESPONSE=`curl -s -X POST https://keycloak.gada.io/auth/realms/internmatch/protocol/openid-connect/token  -H "Content-Type: application/x-www-form-urlencoded" -d "username=${username}" -d "password=${password}" -d 'grant_type=password' -d 'client_id=internmatch'  -d 'client_secret=dc7d0960-2e1d-4a78-9eef-77678066dbd3'`
 #echo $KEYCLOAK_RESPONSE
 #printf "${RED}Parsing access_token field, as we don't need the other elements:${NORMAL}\n"
 TOKEN=`echo "$KEYCLOAK_RESPONSE" | jq -r '.access_token'`
 echo $TOKEN
 echo ""
-echo "${url}/import/attributes ${sourceurl}"
-CR=`curl -s -X GET "${url}/import/attributes?url=${sourceurl}"  --header "Authorization: Bearer $TOKEN" -H "accept: */*" -H "Content-Type: application/json"  --header 'Accept: application/json'  `
-echo -e "${Green}${CR}${Color_Off}\n"
+echo "${url}/qwanda/attributes "
+CR=`curl -s -X GET "${url}/qwanda/attributes"  --header "Authorization: Bearer $TOKEN" -H "accept: */*" -H "Content-Type: application/json"  --header 'Accept: application/json'  `
+CR2=`echo "${CR}" | jq .  `
+echo -e "${Green}${CR2}${Color_Off}\n"
 echo ""
 echo ""
 

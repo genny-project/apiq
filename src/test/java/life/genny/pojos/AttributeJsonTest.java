@@ -15,7 +15,9 @@ import com.google.gson.GsonBuilder;
 import io.quarkus.test.junit.QuarkusTest;
 import life.genny.qwanda.DateTimeDeserializer;
 import life.genny.qwanda.attribute.Attribute;
+import life.genny.qwanda.attribute.AttributeText;
 import life.genny.qwanda.datatype.LocalDateConverter;
+import life.genny.qwanda.message.QDataAttributeMessage;
 import life.genny.qwanda.validation.Validation;
 
 @QuarkusTest
@@ -37,7 +39,17 @@ public class AttributeJsonTest {
 	public void attributeJsonTest()
 	{
 		Jsonb jsonb = JsonbBuilder.create();
-
+		
+		Attribute a = new AttributeText("PRI_TEXT","Text");
+		Attribute b = new AttributeText("PRI_TEXT2","Text2");
+		
+		Attribute[] aa = new Attribute[2];
+		aa[0]= a;
+		aa[1] = b;
+		
+		QDataAttributeMessage msg = new QDataAttributeMessage(aa);
+		
+		String ja = jsonb.toJson(msg);
 		
 		String vjson = String.join("\n", "{",
 	            "\"regex\": \".*\",",

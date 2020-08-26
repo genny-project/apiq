@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -35,9 +37,10 @@ import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.quarkus.security.identity.SecurityIdentity;
-import life.genny.notes.models.DataTable;
-import life.genny.notes.models.GennyToken;
+import life.genny.qwanda.DataTable;
+import life.genny.qwanda.GennyToken;
 import life.genny.qwanda.attribute.Attribute;
+import life.genny.qwanda.attribute.AttributeText;
 import life.genny.qwanda.message.QDataAttributeMessage;
 
 
@@ -94,11 +97,34 @@ public class AttributeResource {
 	    if (userToken == null) {
 	    	return Response.status(Status.FORBIDDEN).build();
 	    }
-	    
 		final List<Attribute> entitys = Attribute.listAll();
 		Attribute[] atArr = new Attribute[entitys.size()];
+//		for (int i =0; i < entitys.size(); i++) {
+//            atArr[i] = entitys.get(i); 
+//            
+//		}
 		atArr = entitys.toArray(atArr);
+//		log.info("FetchedAll Attributes Array "+atArr.length);
 		QDataAttributeMessage msg = new QDataAttributeMessage(atArr);
+//		for (Attribute a : msg.getItems()) {
+//			log.info(a);
+//		}
+//		log.info("About to send Attribute Array Message ");
+//		Jsonb jsonb = JsonbBuilder.create();
+//		String json = jsonb.toJson(msg);
+//		log.info("About to send Attribute Array Message as json "+json);
+//		
+//		Attribute a = new AttributeText("PRI_TEXT","Text");
+//		Attribute b = new AttributeText("PRI_TEXT2","Text2");
+//		
+//		Attribute[] aa = new Attribute[2];
+//		aa[0]= a;
+//		aa[1] = b;
+//		
+//		QDataAttributeMessage msg2 = new QDataAttributeMessage(aa);
+//		
+//		String ja = jsonb.toJson(msg2);
+//		log.info("About to send Test Attribute Array Message as json "+ja);
 		return Response.status(Status.OK).entity(msg).build();
 	}
 
@@ -201,7 +227,7 @@ public class AttributeResource {
     ) {
         GennyToken userToken = new GennyToken(accessToken.getRawToken());
 
-        life.genny.notes.models.DataTable<Attribute> result = new DataTable<>();
+        life.genny.qwanda.DataTable<Attribute> result = new DataTable<>();
         
         if (!userToken.hasRole("dev") && !userToken.hasRole("superadmin")) {
  			throw new WebApplicationException("User not recognised. Entityies not being fetched",

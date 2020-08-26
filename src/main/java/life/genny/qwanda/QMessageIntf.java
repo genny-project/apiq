@@ -1,4 +1,4 @@
-package life.genny.notes.models;
+package life.genny.qwanda;
 
 public interface QMessageIntf {
 	public String getMsg_type();
