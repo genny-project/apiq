@@ -73,25 +73,36 @@ On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 if [ $# -eq 0 ]
 then
-   echo "usage: readAttributes.sh <url> <username> <password> "
+   echo "usage: readAttributes.sh <url> <username> <password> [timeonly] "
    echo "e.g. ./readAttributes.sh http://localhost:8096 dev1 password1 "
+   echo "e.g. ./readAttributes.sh http://localhost:8096 dev1 password1 true "
    exit;
 fi
 mydate=`date -u +"%Y-%m-%dT%H:%M:%S.000Z"`
 url=$1
 username=$2
 password=$3
-echo ${mydate}  $url ${sourceurl} ${username} ${password}
+timeonly=$4
+echo ${mydate}  $url ${sourceurl} ${username} ${password} $timeonly
 KEYCLOAK_RESPONSE=`curl -s -X POST https://keycloak.gada.io/auth/realms/internmatch/protocol/openid-connect/token  -H "Content-Type: application/x-www-form-urlencoded" -d "username=${username}" -d "password=${password}" -d 'grant_type=password' -d 'client_id=alyson'  `
 #echo $KEYCLOAK_RESPONSE
 #printf "${RED}Parsing access_token field, as we don't need the other elements:${NORMAL}\n"
 TOKEN=`echo "$KEYCLOAK_RESPONSE" | jq -r '.access_token'`
 #echo $TOKEN
-echo ""
-echo "${url}/qwanda/attributes "
-CR=`curl -s -X GET "${url}/qwanda/attributes"  --header "Authorization: Bearer $TOKEN" -H "accept: */*" -H "Content-Type: application/json"  --header 'Accept: application/json'  `
-CR2=`echo "${CR}" | jq .  `
-echo -e "${Green}${CR2}${Color_Off}\n"
-echo ""
-echo ""
+if [ -z ${timeronly} ]; then
+  echo "${url}/qwanda/attributes ";
+else
+  echo "";
+fi
+
+if [ -z ${timeonly+x} ]; then
+  echo "No TIMING"
+  CR=`curl -s -X GET "${url}/qwanda/attributes"  --header "Authorization: Bearer $TOKEN" -H "accept: */*" -H "Content-Type: application/json"  --header 'Accept: application/json'  `
+  CR2=`echo "${CR}" | jq .  `
+  echo -e "${Green}${CR2}${Color_Off}\n"
+else
+  echo "TIMING"
+  CR=`time   curl -s -X GET "${url}/qwanda/attributes"  --header "Authorization: Bearer $TOKEN" -H "accept: */*" -H "Content-Type: application/json"  --header 'Accept: application/json' |  awk 'NR == 1 {print}' `
+  echo -e "${Green}${CR2}${Color_Off}\n"
+fi
 #echo $TOKEN
