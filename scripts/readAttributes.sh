@@ -95,7 +95,7 @@ else
   echo "";
 fi
 
-if [ -z ${timeonly+x} ]; then
+if [ -z ${timeonly} ]; then
   echo "No TIMING"
   CR=`curl -s -X GET "${url}/qwanda/attributes"  --header "Authorization: Bearer $TOKEN" -H "accept: */*" -H "Content-Type: application/json"  --header 'Accept: application/json'  `
   CR2=`echo "${CR}" | jq .  `
