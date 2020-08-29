@@ -1,12 +1,20 @@
 package life.genny.qwanda.attribute;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
+import javax.json.bind.annotation.JsonbTransient;
+import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 
 import org.jboss.logging.Logger;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import life.genny.notes.utils.LocalDateTimeAdapter;
 import life.genny.qwanda.Value;
 
 //
@@ -59,20 +67,20 @@ import life.genny.qwanda.Value;
 public class EntityAttribute extends PanacheEntity {
 //
 	private static final Logger log = Logger.getLogger(EntityAttribute.class);
-//	
-//	private static final String REGEX_REALM = "[a-zA-Z0-9]+";
-//	private static final String DEFAULT_REALM = "genny";
-//
-//	@NotEmpty
-//	@JsonbTransient
-//	@Pattern(regexp = REGEX_REALM, message = "Must be valid Realm Format!")
-//	public String realm=DEFAULT_REALM;
-//	
-//	@JsonbTypeAdapter(LocalDateTimeAdapter.class)
-//	public LocalDateTime created = LocalDateTime.now(ZoneId.of("UTC"));
-//
-//	@JsonbTypeAdapter(LocalDateTimeAdapter.class)
-//	public LocalDateTime updated;
+	
+	private static final String REGEX_REALM = "[a-zA-Z0-9]+";
+	private static final String DEFAULT_REALM = "genny";
+
+	@NotEmpty
+	@JsonbTransient
+	@Pattern(regexp = REGEX_REALM, message = "Must be valid Realm Format!")
+	public String realm=DEFAULT_REALM;
+	
+	@JsonbTypeAdapter(LocalDateTimeAdapter.class)
+	public LocalDateTime created = LocalDateTime.now(ZoneId.of("UTC"));
+
+	@JsonbTypeAdapter(LocalDateTimeAdapter.class)
+	public LocalDateTime updated;
 //
 //	@NotNull
 //	public Attribute attribute;
