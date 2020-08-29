@@ -86,32 +86,31 @@ public class EntityAttribute extends PanacheEntity {
 //	public Attribute attribute;
 //	
 	public Value value;
-//	
-//
-//	public Boolean readonly = false;
-//	
-//
-//	@Transient
-//	@XmlTransient
-//	private Integer index=0;  // used to assist with ordering 
-//
-//	/**
-//	 * Store the relative importance of the attribute for the baseEntity
-//	 */
-//
-//	public Double weight;
-//
-//	/**
-//	 * Store the relative importance of the attribute for the baseEntity
-//	 */
-//	public Boolean inferred = false;
-//
-//	/**
-//	 * Store the privacy of this attribute , i.e. Don't display
-//	 */
-//	public Boolean privacyFlag = false;
-//
-//
+	
+
+	public Boolean readonly = false;
+	
+
+	@Transient
+	private Integer index=0;  // used to assist with ordering 
+
+	/**
+	 * Store the relative importance of the attribute for the baseEntity
+	 */
+
+	public Double weight;
+
+	/**
+	 * Store the relative importance of the attribute for the baseEntity
+	 */
+	public Boolean inferred = false;
+
+	/**
+	 * Store the privacy of this attribute , i.e. Don't display
+	 */
+	public Boolean privacyFlag = false;
+
+
 	public EntityAttribute() {
 	}
 //
