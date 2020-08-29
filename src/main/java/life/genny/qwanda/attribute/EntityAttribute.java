@@ -89,9 +89,9 @@ public class EntityAttribute extends PanacheEntity {
 	public Value value;
 	
 
-//	public Boolean readonly = false;
-//	
-//
+	public Boolean readonly = false;
+	
+
 //	@Transient
 //	public Integer index=0;  // used to assist with ordering 
 //
@@ -99,17 +99,17 @@ public class EntityAttribute extends PanacheEntity {
 //	 * Store the relative importance of the attribute for the baseEntity
 //	 */
 //
-//	public Double weight;
-//
-//	/**
-//	 * Store the relative importance of the attribute for the baseEntity
-//	 */
-//	public Boolean inferred = false;
-//
-//	/**
-//	 * Store the privacy of this attribute , i.e. Don't display
-//	 */
-//	public Boolean privacyFlag = false;
+	public Double weight;
+
+	/**
+	 * Store the relative importance of the attribute for the baseEntity
+	 */
+	public Boolean inferred = false;
+
+	/**
+	 * Store the privacy of this attribute , i.e. Don't display
+	 */
+	public Boolean privacyFlag = false;
 
 
 	public EntityAttribute() {
