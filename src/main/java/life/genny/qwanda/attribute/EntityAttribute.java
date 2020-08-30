@@ -6,6 +6,7 @@ import java.util.Date;
 
 import javax.json.bind.annotation.JsonbTransient;
 import javax.json.bind.annotation.JsonbTypeAdapter;
+import javax.persistence.Cacheable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -26,37 +27,8 @@ import life.genny.notes.utils.LocalDateTimeAdapter;
 import life.genny.qwanda.Value;
 
 //
-//import java.time.LocalDateTime;
-//import java.time.ZoneId;
-//import java.util.Date;
-//
-//import javax.json.bind.annotation.JsonbTransient;
-//import javax.json.bind.annotation.JsonbTypeAdapter;
-//import javax.persistence.Cacheable;
-//import javax.persistence.Entity;
-//import javax.persistence.Index;
-//import javax.persistence.PrePersist;
-//import javax.persistence.PreUpdate;
-//import javax.persistence.Table;
-//import javax.persistence.Transient;
-//import javax.persistence.UniqueConstraint;
-//import javax.validation.constraints.NotEmpty;
-//import javax.validation.constraints.NotNull;
-//import javax.validation.constraints.Pattern;
-//import javax.xml.bind.annotation.XmlTransient;
-//
-//import org.hibernate.annotations.CacheConcurrencyStrategy;
-//import org.jboss.logging.Logger;
-//
-//import com.fasterxml.jackson.annotation.JsonIgnore;
-//
-//import io.quarkus.hibernate.orm.panache.PanacheEntity;
-//import io.quarkus.runtime.annotations.RegisterForReflection;
-//import life.genny.notes.utils.LocalDateTimeAdapter;
-//import life.genny.qwanda.Value;
-//
-//
-//
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 @Entity
 
 @Table(name = "qbaseentity_attribute" )
@@ -68,9 +40,9 @@ import life.genny.qwanda.Value;
 //    },
 //uniqueConstraints = @UniqueConstraint(columnNames = {"attributeCode","baseEntityCode","realm"})
 //)
-//
-//@Cacheable
-//@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @RegisterForReflection
 public class EntityAttribute extends PanacheEntity {
 //
