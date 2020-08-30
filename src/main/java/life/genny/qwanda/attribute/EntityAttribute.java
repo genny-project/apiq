@@ -110,7 +110,7 @@ public class EntityAttribute extends PanacheEntity {
 	 * Store the relative importance of the attribute for the baseEntity
 	 */
 
-//	public Double weight;
+	public Double weight2;
 
 	/**
 	 * Store the relative importance of the attribute for the baseEntity
