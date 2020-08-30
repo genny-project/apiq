@@ -106,10 +106,10 @@ public class EntityAttribute extends PanacheEntity {
 //	 */
 //	public Boolean inferred = false;
 //
-//	/**
-//	 * Store the privacy of this attribute , i.e. Don't display
-//	 */
-//	public Boolean privacyFlag = false;
+	/**
+	 * Store the privacy of this attribute , i.e. Don't display
+	 */
+	public Boolean privacyFlag = false;
 
 
 	public EntityAttribute() {
