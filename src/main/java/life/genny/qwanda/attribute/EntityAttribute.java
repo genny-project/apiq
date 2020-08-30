@@ -242,8 +242,7 @@ public class EntityAttribute extends PanacheEntity {
 		if (this == obj)
 			return 0;
 
-		//return value.compareTo(obj.value);
-		return 0;
+		return value.compareTo(obj.value);
 	}
 
 

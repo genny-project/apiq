@@ -27,7 +27,7 @@ import life.genny.qwanda.datatype.DataType;
 
 @Embeddable
 @RegisterForReflection
-public class Value implements Serializable/*,Comparable<Value> */{
+public class Value implements Serializable,Comparable<Value> {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -309,41 +309,41 @@ public class Value implements Serializable/*,Comparable<Value> */{
 				&& Objects.equals(valueTime, other.valueTime) && Objects.equals(weight, other.weight);
 	}
 
-//	@Override
-//	public int compareTo(Value obj) {
-//		if (this == obj)
-//			return 0;
-//
-//		switch (dataType.getClassName()) {
-//		case "java.lang.Integer":
-//		case "Integer":
-//			return Integer.compare(valueInteger, obj.valueInteger); 
-//		case "java.time.LocalDateTime":
-//		case "LocalDateTime":
-//			return new CompareToBuilder().append(this.valueDateTime, obj.valueDateTime).toComparison();
-//		case "java.time.LocalTime":
-//		case "LocalTime":
-//			return new CompareToBuilder().append(this.valueTime, obj.valueTime).toComparison();
-//		case "java.lang.Long":
-//		case "Long":
-//			return new CompareToBuilder().append(this.valueLong,obj.valueLong).toComparison();
-//		case "java.lang.Double":
-//		case "Double":
-//			return new CompareToBuilder().append(this.valueDouble, obj.valueDouble).toComparison();
-//		case "java.lang.Boolean":
-//		case "Boolean":
-//			return new CompareToBuilder().append(this.valueBoolean, obj.valueBoolean).toComparison();
-//		case "java.time.LocalDate":
-//		case "LocalDate":
-//			return new CompareToBuilder().append(this.valueDate, obj.valueDate).toComparison();
-//		case "org.javamoney.moneta.Money":
-//		case "java.lang.String":
-//		default:
-//			return new CompareToBuilder().append(this.valueString, obj.valueString).toComparison();
-//
-//		}
-//
-//	}
+	@Override
+	public int compareTo(Value obj) {
+		if (this == obj)
+			return 0;
+
+		switch (dataType.getClassName()) {
+		case "java.lang.Integer":
+		case "Integer":
+			return Integer.compare(valueInteger, obj.valueInteger); 
+		case "java.time.LocalDateTime":
+		case "LocalDateTime":
+			return this.valueDateTime.compareTo(obj.valueDateTime);
+		case "java.time.LocalTime":
+		case "LocalTime":
+			return this.valueTime.compareTo(obj.valueTime);
+		case "java.lang.Long":
+		case "Long":
+			return this.valueLong.compareTo(obj.valueLong);
+		case "java.lang.Double":
+		case "Double":
+			return this.valueDouble.compareTo(obj.valueDouble);
+		case "java.lang.Boolean":
+		case "Boolean":
+			return this.valueBoolean.compareTo(obj.valueBoolean);
+		case "java.time.LocalDate":
+		case "LocalDate":
+			return this.valueDate.compareTo(obj.valueDate);
+		case "org.javamoney.moneta.Money":
+		case "java.lang.String":
+		default:
+			return this.valueString.compareTo(obj.valueString);
+
+		}
+
+	}
 //
 //	public class compare implements Comparator<Value> {
 //		 
