@@ -24,7 +24,7 @@ import org.jboss.logging.Logger;
 @Entity
 @Table(name = "qentity_q")
 @RegisterForReflection
-public class EntityQuestion  extends PanacheEntity implements Serializable/*, Comparable<Object>*/ {
+public class EntityQuestion  extends PanacheEntity implements Serializable, Comparable<Object> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -43,10 +43,10 @@ public class EntityQuestion  extends PanacheEntity implements Serializable/*, Co
 ////    this.link = link;
 ////  }
 //
-//	@Override
-//	public int compareTo(Object o) {
-//		return 0;
-//	}
+	@Override
+	public int compareTo(Object o) {
+		return 0;
+	}
 //
 //	@SuppressWarnings("unchecked")
 //	@JsonbTransient

@@ -125,8 +125,8 @@ public class BaseEntity extends PanacheEntity {
 //	private Set<EntityEntity> links = new LinkedHashSet<>();
 
 
-//	@Transient
-//	public Set<EntityQuestion> questions = new HashSet<EntityQuestion>(0);
+	@Transient
+ 	public Set<EntityQuestion> questions = new HashSet<EntityQuestion>(0);
 
 //	@JsonbTransient
 //	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.source")
