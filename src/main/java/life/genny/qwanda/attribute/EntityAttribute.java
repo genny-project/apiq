@@ -103,7 +103,7 @@ public class EntityAttribute extends PanacheEntity {
 	public Boolean readonly = false;
 	
 
-//	@Transient
+	@Transient
 	public Integer index=0;  // used to assist with ordering 
 
 	/**
@@ -125,19 +125,7 @@ public class EntityAttribute extends PanacheEntity {
 
 	public EntityAttribute() {
 	}
-//
-//	/**
-//	 * Constructor.
-//	 * 
-//	 * @param BaseEntity
-//	 *            the entity that needs to contain attributes
-//	 * @param Attribute
-//	 *            the associated Attribute
-//	 * @param Weight
-//	 *            the weighted importance of this attribute (relative to the other
-//	 *            attributes)
-//	 */
-//
+
 	@PreUpdate
 	public void autocreateUpdate() {
 		updated = LocalDateTime.now(ZoneId.of("UTC"));
