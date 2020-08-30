@@ -163,139 +163,129 @@ public class EntityAttribute extends PanacheEntity {
 		final Date out = Date.from(updated.atZone(ZoneId.systemDefault()).toInstant());
 		return out;
 	}
-//
-//	@SuppressWarnings("unchecked")
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public String getAttributeCode()
-//	{
-//		return attribute.code;
-//	}
-//	
-//	
-//
-//	@SuppressWarnings("unchecked")
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public <T> T getValue() {
-//		return value.getValue();
-//	      
-//	}
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public <T> void setValue(final Object value) {
-//		if (this.readonly) {
-//			log.error("Trying to set the value of a readonly EntityAttribute! "+getAttributeCode());
-//			return; 
-//		}
-//
-//		setValue(value,true);
-//	}
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public <T> void setValue(final Object value, final Boolean lock) {
-//		if (this.readonly) {
-//			log.error("Trying to set the value of a readonly EntityAttribute! "+getAttributeCode());
-//			return; 
-//		}
-//
-//		this.value.setValue(value);
-//		// if the lock is set then 'Lock it in Eddie!'. 
-//		if (lock)
-//		{
-//			this.readonly = true;
-//		}
-//
-//	}
-//	
-//
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public <T> void setLoopValue(final Object value) {
-//		setValue(value,false);
-//	}
-//	
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public String getAsString() {
-//
-//	return value.toString();
-//	}
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public String getAsLoopString() {
-//	return value.toString();
-//	}
-//	
-//	@SuppressWarnings("unchecked")
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public  <T> T getLoopValue() {
-//	return getValue();
-//		
-//	}
-//
-//	public int compareTo(EntityAttribute obj) {
-//		if (this == obj)
-//			return 0;
-//
-//		return value.compareTo(obj.value);
-//
-//	}
-//
-//
-//	@Override
-//	public String toString() {
-//		return "attributeCode=" + getAttributeCode() + ", value="
-//				+ value + ", weight=" + weight + ", inferred=" + inferred + "] be="/*+this.getBaseEntityCode()*/;
-//	}
-//
-//	@SuppressWarnings("unchecked")
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public <T> T getObject() {
-//
-//		return getValue();
-//	}
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public String getObjectAsString() {
-//
-//			return value.toString();
-//
-//	}
-//
-//	
-//
-//	/**
-//	 * @return the index
-//	 */
-//	public Integer getIndex() {
-//		return index;
-//	}
-//
-//	/**
-//	 * @param index the index to set
-//	 */
-//	public void setIndex(Integer index) {
-//		this.index = index;
-//	}
-//
-//
-//	
+
+	@SuppressWarnings("unchecked")
+	@JsonbTransient
+	@Transient
+	public String getAttributeCode()
+	{
+		return attribute.code;
+	}
+	
+	
+
+	@SuppressWarnings("unchecked")
+	@JsonbTransient
+	@Transient
+	public <T> T getValue() {
+		return value.getValue();
+	      
+	}
+
+	@JsonbTransient
+	@Transient
+	public <T> void setValue(final Object value) {
+		if (this.readonly) {
+			log.error("Trying to set the value of a readonly EntityAttribute! "+getAttributeCode());
+			return; 
+		}
+
+		setValue(value,true);
+	}
+	@JsonbTransient
+	@Transient
+	public <T> void setValue(final Object value, final Boolean lock) {
+		if (this.readonly) {
+			log.error("Trying to set the value of a readonly EntityAttribute! "+getAttributeCode());
+			return; 
+		}
+
+		this.value.setValue(value);
+		// if the lock is set then 'Lock it in Eddie!'. 
+		if (lock)
+		{
+			this.readonly = true;
+		}
+
+	}
+	
+
+
+	@JsonbTransient
+	@Transient
+	public <T> void setLoopValue(final Object value) {
+		setValue(value,false);
+	}
+	
+
+	@JsonbTransient
+	@Transient
+	public String getAsString() {
+
+	return value.toString();
+	}
+
+	@JsonbTransient
+	@Transient
+	public String getAsLoopString() {
+	return value.toString();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@JsonbTransient
+	@Transient
+	public  <T> T getLoopValue() {
+	return getValue();
+		
+	}
+
+	public int compareTo(EntityAttribute obj) {
+		if (this == obj)
+			return 0;
+
+		//return value.compareTo(obj.value);
+		return 0;
+	}
+
+
+	@Override
+	public String toString() {
+		return "attributeCode=" + getAttributeCode() + ", value="
+				+ value + ", weight=" + /*weight +*/ ", inferred=" + inferred + "] be="/*+this.getBaseEntityCode()*/;
+	}
+
+	@SuppressWarnings("unchecked")
+	@JsonbTransient
+	@Transient
+	public <T> T getObject() {
+
+		return getValue();
+	}
+
+	@JsonbTransient
+	@Transient
+	public String getObjectAsString() {
+
+			return value.toString();
+
+	}
+
+	
+
+	/**
+	 * @return the index
+	 */
+	public Integer getIndex() {
+		return index;
+	}
+
+	/**
+	 * @param index the index to set
+	 */
+	public void setIndex(Integer index) {
+		this.index = index;
+	}
+
+
+	
 }
