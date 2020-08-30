@@ -126,19 +126,14 @@ public class Attribute extends PanacheEntity {
 	@NotNull
 	public DataType dataType;
 	
-
 	public Boolean defaultPrivacyFlag = false;
-
 
 	public String description;
 	
-
 	public String help;
 	
-
 	public String placeholder;
 	
-
 	public String defaultValue;
 	
 
@@ -158,22 +153,10 @@ public class Attribute extends PanacheEntity {
 	{
 		this.code = code;
 		this.name = name;
-		setDataType(dataType);
+		this.dataType = dataType;
+		this.placeholder = name;
 	}
 	
-	/**
-	 * @return the dataType
-	 */
-	public DataType getDataType() {
-		return dataType;
-	}
-
-	/**
-	 * @param dataType the dataType to set
-	 */
-	public void setDataType(DataType dataType) {
-		this.dataType = dataType;
-	}
 
 	/**
 	 * getDefaultCodePrefix This method is overrides the Base class
@@ -190,94 +173,5 @@ public class Attribute extends PanacheEntity {
 		return code+ ",dataType=" + dataType;
 	}
 
-
-	/**
-	 * @return the defaultPrivacyFlag
-	 */
-	public Boolean getDefaultPrivacyFlag() {
-		return defaultPrivacyFlag;
-	}
-
-
-	/**
-	 * @param defaultPrivacyFlag the defaultPrivacyFlag to set
-	 */
-	public void setDefaultPrivacyFlag(Boolean defaultPrivacyFlag) {
-		this.defaultPrivacyFlag = defaultPrivacyFlag;
-	}
-
-
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-
-	/**
-	 * @param description the description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-
-	/**
-	 * @return the help
-	 */
-	public String getHelp() {
-		return help;
-	}
-
-
-	/**
-	 * @param help the help to set
-	 */
-	public void setHelp(String help) {
-		this.help = help;
-	}
-
-
-	/**
-	 * @return the placeholder
-	 */
-	public String getPlaceholder() {
-		return placeholder;
-	}
-
-
-	/**
-	 * @param placeholder the placeholder to set
-	 */
-	public void setPlaceholder(String placeholder) {
-		this.placeholder = placeholder;
-	}
-
-
-	/**
-	 * @return the defaultValue
-	 */
-	public String getDefaultValue() {
-		return defaultValue;
-	}
-
-
-	/**
-	 * @param defaultValue the defaultValue to set
-	 */
-	public void setDefaultValue(String defaultValue) {
-		this.defaultValue = defaultValue;
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	/*@Override
-	public String toString() {
-		return "Attribute:"+getCode()+"(" + getDataType()+") ";
-	}*/
-	
-	
 
 }

@@ -116,6 +116,10 @@ public class Value implements Serializable/*,Comparable<Value> */{
 	@Transient
 	public <T> void setValue(final Object value) {
 		
+		if (value == null) {
+			return;
+		}
+		
 		if (value instanceof String) {
 			String result = (String) value;
 			try {

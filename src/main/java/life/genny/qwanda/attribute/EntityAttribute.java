@@ -73,6 +73,9 @@ public class EntityAttribute extends PanacheEntity {
 	@JoinColumn(name = "BASEENTITY_ID", nullable = false)
 	public BaseEntity baseentity;
 
+	// For compatibility initially
+	public String baseEntityCode; 
+	public String attributeCode;
 	
 	@Embedded
 	@NotNull
@@ -99,6 +102,44 @@ public class EntityAttribute extends PanacheEntity {
 
 	public EntityAttribute() {
 	}
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param BaseEntity
+	 *            the entity that needs to contain attributes
+	 * @param Attribute
+	 *            the associated Attribute
+	 * @param Weight
+	 *            the weighted importance of this attribute (relative to the other
+	 *            attributes)
+	 */
+	public EntityAttribute(final BaseEntity baseEntity, final Attribute attribute, Double weight) {
+		this(baseEntity,attribute,weight,null);	
+		}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param BaseEntity
+	 *            the entity that needs to contain attributes
+	 * @param Attribute
+	 *            the associated Attribute
+	 * @param Weight
+	 *            the weighted importance of this attribute (relative to the other
+	 *            attributes)
+	 * @param Value
+	 *            the value associated with this attribute
+	 */
+	public EntityAttribute(final BaseEntity baseEntity, final Attribute attribute, Double weight, final Object value) {
+		autocreateCreated();
+		this.baseentity = baseEntity;
+		this.attribute = attribute;
+		setWeight(weight);	
+		privacyFlag = attribute.defaultPrivacyFlag;
+			setValue(value);
+	}
+	
 
 	@PreUpdate
 	public void autocreateUpdate() {
@@ -126,14 +167,6 @@ public class EntityAttribute extends PanacheEntity {
 		return out;
 	}
 
-	@SuppressWarnings("unchecked")
-	@JsonbTransient
-	@Transient
-	public String getAttributeCode()
-	{
-		return attribute.code;
-	}
-	
 	
 
 	@SuppressWarnings("unchecked")
@@ -148,7 +181,7 @@ public class EntityAttribute extends PanacheEntity {
 	@Transient
 	public <T> void setValue(final Object value) {
 		if (this.readonly) {
-			log.error("Trying to set the value of a readonly EntityAttribute! "+getAttributeCode());
+			log.error("Trying to set the value of a readonly EntityAttribute! "+attribute.code);
 			return; 
 		}
 
@@ -158,11 +191,15 @@ public class EntityAttribute extends PanacheEntity {
 	@Transient
 	public <T> void setValue(final Object value, final Boolean lock) {
 		if (this.readonly) {
-			log.error("Trying to set the value of a readonly EntityAttribute! "+getAttributeCode());
+			log.error("Trying to set the value of a readonly EntityAttribute! "+attribute.code);
 			return; 
 		}
 
-		this.value.setValue(value);
+		if (value == null) {
+			this.value.setValue(this.attribute.defaultValue);
+		} else {
+			this.value.setValue(value);
+		}
 		// if the lock is set then 'Lock it in Eddie!'. 
 		if (lock)
 		{
@@ -212,8 +249,8 @@ public class EntityAttribute extends PanacheEntity {
 
 	@Override
 	public String toString() {
-		return "attributeCode=" + getAttributeCode() + ", value="
-				+ value + ", weight=" + /*weight +*/ ", inferred=" + inferred + "] be="/*+this.getBaseEntityCode()*/;
+		return "attributeCode=" + attribute.code + ", value="
+				+ value + ", weight=" + value.weight + ", inferred=" + inferred + "] be="+baseentity.code;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -258,6 +295,10 @@ public class EntityAttribute extends PanacheEntity {
 	@Transient
 	public void setWeight(Double weight)
 	{
+		if (weight == null) {
+			weight = 0.0; // This permits ease of adding attributes and hides
+							// attribute from scoring.
+		}
 		value.weight = weight;
 	}
 }
