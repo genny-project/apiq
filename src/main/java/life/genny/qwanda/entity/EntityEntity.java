@@ -1,15 +1,28 @@
 package life.genny.qwanda.entity;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 import javax.json.bind.annotation.JsonbTransient;
+import javax.json.bind.annotation.JsonbTypeAdapter;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.jboss.logging.Logger;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import life.genny.notes.utils.LocalDateTimeAdapter;
+import life.genny.qwanda.Link;
+import life.genny.qwanda.Value;
+import life.genny.qwanda.attribute.Attribute;
 
 @Entity
 @Table(name = "baseentity_baseentity")
@@ -42,38 +55,38 @@ public class EntityEntity  extends PanacheEntity  implements java.io.Serializabl
 	@Pattern(regexp = REGEX_REALM, message = "Must be valid Realm Format!")
 	public String realm = DEFAULT_REALM;
 
-//	@JsonbTypeAdapter(LocalDateTimeAdapter.class)
-//	public LocalDateTime created = LocalDateTime.now(ZoneId.of("UTC"));
-//
-//	@JsonbTypeAdapter(LocalDateTimeAdapter.class)
-//	public LocalDateTime updated;
+	@JsonbTypeAdapter(LocalDateTimeAdapter.class)
+	public LocalDateTime created = LocalDateTime.now(ZoneId.of("UTC"));
+
+	@JsonbTypeAdapter(LocalDateTimeAdapter.class)
+	public LocalDateTime updated;
 ////
 ////	@JsonbTypeAdapter(AttributeAdapter.class)
-//	@NotNull
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	public Attribute attribute;
-//
-//	@JsonbTransient
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "SOURCE_ID", nullable = false)
-//	public BaseEntity source;
-//
-//	@JsonbTransient
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "TARGET_ID", nullable = false)
-//	public BaseEntity target;
-//
-//	// For compatibility initially
-//	public String baseEntityCode;
-//	public String attributeCode;
-//
-//	@Embedded
-//	@NotNull
-//	public Value value;
-//
-//	@Embedded
-//	public Link link ;
-//	
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Attribute attribute;
+
+	@JsonbTransient
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "SOURCE_ID", nullable = false)
+	public BaseEntity source;
+
+	@JsonbTransient
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "TARGET_ID", nullable = false)
+	public BaseEntity target;
+
+	// For compatibility initially
+	public String baseEntityCode;
+	public String attributeCode;
+
+	@Embedded
+	@NotNull
+	public Value value;
+
+	@Embedded
+	public Link link ;
+	
 //
 //
 //
