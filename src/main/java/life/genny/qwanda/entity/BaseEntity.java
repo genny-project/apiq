@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.json.bind.annotation.JsonbTransient;
 import javax.json.bind.annotation.JsonbTypeAdapter;
@@ -31,6 +32,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -115,20 +117,6 @@ public class BaseEntity extends PanacheEntity {
     @OneToMany(cascade = CascadeType.ALL,  fetch = FetchType.EAGER, orphanRemoval=true)
 	public Set<EntityAttribute> baseEntityAttributes = new HashSet<>();
 
-	
-
-//	@OneToMany(fetch = FetchType.EAGER, mappedBy = "pk.baseEntity")
-//	@JsonBackReference(value = "entityAttribute")
-//	@Cascade({ CascadeType.MERGE, CascadeType.DELETE })
-//	@Filters({
-//			@org.hibernate.annotations.Filter(name = "filterAttribute", condition = "attributeCode in (:attributeCodes)"),
-//			@org.hibernate.annotations.Filter(name = "filterAttribute2", condition = "attributeCode =:attributeCode")
-//
-//	})
-//
-//	private Set<EntityAttribute> baseEntityAttributes = new HashSet<EntityAttribute>(0);
-
-//	@XmlTransient
 //	@OneToMany(fetch = FetchType.EAGER, mappedBy = "pk.source")
 //	@JsonBackReference(value = "entityEntity")
 //	@Cascade({ CascadeType.MERGE, CascadeType.DELETE })
@@ -151,31 +139,30 @@ public class BaseEntity extends PanacheEntity {
 	 * @param none
 	 */
 	@SuppressWarnings("unused")
-	protected BaseEntity() {
-		//super();
-		// dummy
+	public BaseEntity() {
+
 	}
 
-//	/**
-//	 * Constructor.
-//	 * 
-//	 * @param Name the summary name of the core entity
-//	 */
-//	public BaseEntity(final String aName) {
-//		super(getDefaultCodePrefix() + UUID.randomUUID().toString(), aName);
-//
-//	}
-//
-//	/**
-//	 * Constructor.
-//	 * 
-//	 * @param Code the unique code of the core entity
-//	 * @param Name the summary name of the core entity
-//	 */
-//	public BaseEntity(final String aCode, final String aName) {
-//		super(aCode, aName);
-//
-//	}
+	/**
+	 * Constructor.
+	 * 
+	 * @param Name the summary name of the core entity
+	 */
+	public BaseEntity(final String aName) {
+		this(BaseEntity.DEFAULT_CODE_PREFIX+ UUID.randomUUID().toString(),aName);
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param Code the unique code of the core entity
+	 * @param Name the summary name of the core entity
+	 */
+	public BaseEntity(final String aCode, final String aName) {
+		this.code = aCode;
+		this.name = aName;
+
+	}
 //
 //	/**
 //	 * @return the answers

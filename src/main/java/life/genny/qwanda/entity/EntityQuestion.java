@@ -2,12 +2,19 @@ package life.genny.qwanda.entity;
 //
 //import javax.json.bind.annotation.JsonbTransient;
 //import javax.persistence.Embedded;
+//import javax.persistence.Entity;
+//import javax.persistence.Table;
 //import javax.persistence.Transient;
 //import javax.validation.constraints.NotNull;
 //
 //import org.jboss.logging.Logger;
 //
+//import io.quarkus.runtime.annotations.RegisterForReflection;
 //import life.genny.qwanda.Value;
+//
+//@Entity
+//@Table(name = "qentity_question")
+//@RegisterForReflection
 //
 //public class EntityQuestion implements java.io.Serializable, Comparable<Object> {
 //
