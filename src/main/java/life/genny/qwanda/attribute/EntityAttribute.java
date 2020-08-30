@@ -10,6 +10,7 @@ import javax.persistence.Cacheable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -19,15 +20,15 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+//
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.jboss.logging.Logger;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import life.genny.notes.utils.LocalDateTimeAdapter;
 import life.genny.qwanda.Value;
-
-//
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import life.genny.qwanda.entity.BaseEntity;
 
 @Entity
 
@@ -66,6 +67,12 @@ public class EntityAttribute extends PanacheEntity {
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	public Attribute attribute;
+	
+	@JsonbTransient
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "BASEENTITY_ID", nullable = false)
+	public BaseEntity baseentity;
+
 	
 	@Embedded
 	@NotNull

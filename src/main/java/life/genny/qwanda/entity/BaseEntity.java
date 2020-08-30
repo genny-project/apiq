@@ -31,7 +31,6 @@ import javax.persistence.FetchType;
 import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -113,8 +112,8 @@ public class BaseEntity extends PanacheEntity {
 	@JsonbTypeAdapter(LocalDateTimeAdapter.class)
 	public LocalDateTime updated;
 
-//	@OneToMany(mappedBy = "baseEntityCode", cascade = CascadeType.ALL, orphanRemoval = false, fetch = FetchType.EAGER)
-//	public Set<EntityAttribute> baseEntityAttributes = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL,  fetch = FetchType.EAGER, orphanRemoval=true)
+	public Set<EntityAttribute> baseEntityAttributes = new HashSet<>();
 
 	
 
