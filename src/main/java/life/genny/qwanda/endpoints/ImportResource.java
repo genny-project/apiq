@@ -32,7 +32,9 @@ import io.quarkus.security.identity.SecurityIdentity;
 import life.genny.qwanda.GennyToken;
 import life.genny.qwanda.attribute.Attribute;
 import life.genny.qwanda.datatype.DataType;
+import life.genny.qwanda.entity.BaseEntity;
 import life.genny.qwanda.message.QDataAttributeMessage;
+import life.genny.qwanda.message.QDataBaseEntityMessage;
 import life.genny.qwanda.validation.Validation;
 import life.genny.qwanda.validation.ValidationList;
 import life.genny.qwandautils.JsonUtils;
@@ -105,6 +107,62 @@ public class ImportResource {
 						attribute.id = null;
 						attribute.dataType.setValidationList(goodList);
 						attribute.persist();
+					}
+				}
+			}
+
+			return Response.status(Status.OK).build();
+		} catch (IOException e) {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+
+	}
+	
+	@GET
+	@Path("/baseentitys")
+	@Transactional
+	public Response importBaseentitys(@Context UriInfo uriInfo, @QueryParam("url") String  externalGennyUrl) {
+		GennyToken userToken = new GennyToken(accessToken.getRawToken());
+		if (userToken == null) {
+			return Response.status(Status.FORBIDDEN).build();
+		}
+
+		if (!userToken.hasRole("dev") && !userToken.hasRole("superadmin")) {
+			throw new WebApplicationException("User not recognised. Entity not being created", Status.FORBIDDEN);
+		}
+
+		log.info("External Genny Url = " + externalGennyUrl);
+		String jsonString;
+		try {
+			jsonString = QwandaUtils.apiGet(externalGennyUrl + "/qwanda/baseentitys", accessToken.getRawToken());
+			if (!StringUtils.isBlank(jsonString)) {
+
+				QDataBaseEntityMessage baseentityMsg = JsonUtils.fromJson(jsonString, QDataBaseEntityMessage.class);
+				BaseEntity[] baseentityArray = baseentityMsg.getItems();
+
+				for (BaseEntity baseentity : baseentityArray) {
+					log.info(baseentity);
+					BaseEntity existing = BaseEntity.find("code", baseentity.code).firstResult();
+					
+//					DataType dt = attribute.dataType;
+//					List<Validation> vl = dt.getValidationList();
+//					List<Validation> goodList = new ArrayList<Validation>();
+//					for (Validation v : vl) {
+//						Validation existingValidation = Validation.find("code", v.code).firstResult();
+//						if (existingValidation == null) {
+//							v.persist();
+//							goodList.add(v);
+//						} else {
+//							goodList.add(existingValidation);
+//						}
+//					}
+					
+					
+					
+					if (existing == null) {
+						baseentity.id = null;
+//						attribute.dataType.setValidationList(goodList);
+						baseentity.persist();
 					}
 				}
 			}
