@@ -106,11 +106,6 @@ public class EntityAttribute extends PanacheEntity {
 	@Transient
 	public Integer index=0;  // used to assist with ordering 
 
-	/**
-	 * Store the relative importance of the attribute for the baseEntity
-	 */
-
-	public Double weight2;
 
 	/**
 	 * Store the relative importance of the attribute for the baseEntity
@@ -275,5 +270,15 @@ public class EntityAttribute extends PanacheEntity {
 	}
 
 
+	@Transient
+	public Double getWeight()
+	{
+		return value.weight;
+	}
 	
+	@Transient
+	public void setWeight(Double weight)
+	{
+		value.weight = weight;
+	}
 }

@@ -56,7 +56,7 @@ public class Value implements Serializable/*,Comparable<Value> */{
 	/**
 	 * Store the relative credibility of the value
 	 */
-	public Double weight;
+	public Double weight=0.0;
 
 	public Value() {
 		this.dataType = new DataType(String.class.getCanonicalName()); // default
