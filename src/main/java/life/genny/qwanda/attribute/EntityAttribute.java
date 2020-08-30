@@ -101,11 +101,11 @@ public class EntityAttribute extends PanacheEntity {
 //
 //	public Double weight;
 //
-//	/**
-//	 * Store the relative importance of the attribute for the baseEntity
-//	 */
-//	public Boolean inferred = false;
-//
+	/**
+	 * Store the relative importance of the attribute for the baseEntity
+	 */
+	public Boolean inferred = false;
+
 	/**
 	 * Store the privacy of this attribute , i.e. Don't display
 	 */
