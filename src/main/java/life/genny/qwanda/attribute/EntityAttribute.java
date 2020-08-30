@@ -5,14 +5,19 @@ import java.time.ZoneId;
 
 import javax.json.bind.annotation.JsonbTransient;
 import javax.json.bind.annotation.JsonbTypeAdapter;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.jboss.logging.Logger;
 
+import au.com.crowtech.aible.utils.QuestionAdapter;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import life.genny.notes.utils.LocalDateTimeAdapter;
@@ -83,9 +88,13 @@ public class EntityAttribute extends PanacheEntity {
 	@JsonbTypeAdapter(LocalDateTimeAdapter.class)
 	public LocalDateTime updated;
 //
-//	@NotNull
-//	public Attribute attribute;
-//	
+//	@JsonbTypeAdapter(AttributeAdapter.class)
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Attribute attribute;
+	
+	@Embedded
+	@NotNull
 	public Value value;
 	
 
@@ -94,13 +103,13 @@ public class EntityAttribute extends PanacheEntity {
 
 //	@Transient
 //	public Integer index=0;  // used to assist with ordering 
-//
-//	/**
-//	 * Store the relative importance of the attribute for the baseEntity
-//	 */
-//
+
+	/**
+	 * Store the relative importance of the attribute for the baseEntity
+	 */
+
 //	public Double weight;
-//
+
 	/**
 	 * Store the relative importance of the attribute for the baseEntity
 	 */
