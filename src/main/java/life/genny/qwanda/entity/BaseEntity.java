@@ -19,8 +19,12 @@ package life.genny.qwanda.entity;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.json.bind.annotation.JsonbTransient;
 import javax.json.bind.annotation.JsonbTypeAdapter;
@@ -45,7 +49,9 @@ import org.jboss.logging.Logger;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import life.genny.notes.utils.LocalDateTimeAdapter;
+import life.genny.qwanda.attribute.Attribute;
 import life.genny.qwanda.attribute.EntityAttribute;
+import life.genny.qwanda.exception.BadDataException;
 
 /**
  * BaseEntity represents a base entity that contains many attributes. It is the
@@ -179,21 +185,6 @@ public class BaseEntity extends PanacheEntity {
 //	}
 //
 //	/**
-//	 * @return the baseEntityAttributes
-//	 */
-//	@JsonInclude(JsonInclude.Include.NON_NULL)
-//	public Set<EntityAttribute> getBaseEntityAttributes() {
-//		return baseEntityAttributes;
-//	}
-//
-//	/**
-//	 * @param baseEntityAttributes the baseEntityAttributes to set
-//	 */
-//	public void setBaseEntityAttributes(final Set<EntityAttribute> baseEntityAttributes) {
-//		this.baseEntityAttributes = baseEntityAttributes;
-//	}
-//
-//	/**
 //	 * @return the links
 //	 */
 //	@JsonInclude(JsonInclude.Include.NON_NULL)
@@ -210,49 +201,22 @@ public class BaseEntity extends PanacheEntity {
 //		this.links = links;
 //	}
 //
-//	/**
-//	 * @return the questions
-//	 */
-//	@JsonInclude(JsonInclude.Include.NON_NULL)
-//	public Set<EntityQuestion> getQuestions() {
-//		return this.questions;
-//	}
-//
-//	/**
-//	 * Sets the Questions of the BaseEntity with another BaseEntity
-//	 * 
-//	 * @param questions the questions to set
-//	 */
-//	public void setQuestions(final Set<EntityQuestion> questions) {
-//		this.questions = questions;
-//	}
-//
-//	/**
-//	 * getDefaultCodePrefix This method is expected to be overridden in specialised
-//	 * child classes.
-//	 * 
-//	 * @return the default Code prefix for this class.
-//	 */
-//
-//	static public String getDefaultCodePrefix() {
-//		return DEFAULT_CODE_PREFIX;
-//	}
-//
-//	/**
-//	 * containsEntityAttribute This checks if an attribute exists in the baseEntity.
-//	 * 
-//	 * @param attributeCode
-//	 * @returns boolean
-//	 */
-//	public boolean containsEntityAttribute(final String attributeCode) {
-//		boolean ret = false;
-//
-//		// Check if this code exists in the baseEntityAttributes
-//		if (getBaseEntityAttributes().parallelStream().anyMatch(ti -> ti.getAttributeCode().equals(attributeCode))) {
-//			ret = true;
-//		}
-//		return ret;
-//	}
+
+	/**
+	 * containsEntityAttribute This checks if an attribute exists in the baseEntity.
+	 * 
+	 * @param attributeCode
+	 * @returns boolean
+	 */
+	public boolean containsEntityAttribute(final String attributeCode) {
+		boolean ret = false;
+
+		// Check if this code exists in the baseEntityAttributes
+		if (baseEntityAttributes.parallelStream().anyMatch(ti -> ti.attribute.code.equals(attributeCode))) {
+			ret = true;
+		}
+		return ret;
+	}
 //
 //	/**
 //	 * containsLink This checks if an attribute link code is linked to the
@@ -289,172 +253,172 @@ public class BaseEntity extends PanacheEntity {
 //		return ret;
 //	}
 //
-//	/**
-//	 * findEntityAttribute This returns an attributeEntity if it exists in the
-//	 * baseEntity.
-//	 * 
-//	 * @param attributeCode
-//	 * @returns Optional<EntityAttribute>
-//	 */
-//	public Optional<EntityAttribute> findEntityAttribute(final String attributeCode) {
-//
-//		Optional<EntityAttribute> foundEntity = null;
-//
-//		try {
-//			foundEntity = getBaseEntityAttributes().stream().filter(x -> (x.getAttributeCode().equals(attributeCode)))
-//					.findFirst();
-//		} catch (Exception e) {
-//			log.error("Error in fetching attribute value");
-//		}
-//
-////    Optional.of(getBaseEntityAttributes().stream()
-////            .filter(x -> (x.getAttribute().getCode().equals(attributeCode))).findFirst().get());
-//
-//		return foundEntity;
-//	}
-//
-//	/**
-//	 * findEntityAttribute This returns an attributeEntity if it exists in the
-//	 * baseEntity. Could be more efficient in retrival (ACC: test)
-//	 * 
-//	 * @param attribute
-//	 * @returns EntityAttribute
-//	 */
-//	public List<EntityAttribute> findPrefixEntityAttributes(final String attributePrefix) {
-//		List<EntityAttribute> foundEntitys = getBaseEntityAttributes().stream()
-//				.filter(x -> (x.getAttributeCode().startsWith(attributePrefix))).collect(Collectors.toList());
-//
-//		return foundEntitys;
-//	}
-//
-//	/**
-//	 * findEntityAttributes This returns attributeEntitys if it exists in the
-//	 * baseEntity. Could be more efficient in retrival (ACC: test)
-//	 * 
-//	 * @param attribute
-//	 * @returns EntityAttribute
-//	 */
-//	public EntityAttribute findEntityAttribute(final Attribute attribute) {
-//		final EntityAttribute foundEntity = getBaseEntityAttributes().stream()
-//				.filter(x -> (x.getAttributeCode().equals(attribute.getCode()))).findFirst().get();
-//
-//		return foundEntity;
-//	}
-//
-//	/**
-//	 * addAttribute This adds an attribute with default weight of 0.0 to the
-//	 * baseEntity. It auto creates the EntityAttribute object. For efficiency we
-//	 * assume the attribute does not already exist
-//	 * 
-//	 * @param ea
-//	 * @throws BadDataException
-//	 */
-//	public EntityAttribute addAttribute(final EntityAttribute ea) throws BadDataException {
-//		if (ea == null)
-//			throw new BadDataException("missing Attribute");
-//
-//		return addAttribute(ea.getAttribute(), ea.getWeight(), ea.getValue());
-//	}
-//
-//	/**
-//	 * addAttribute This adds an attribute and associated weight to the baseEntity.
-//	 * It auto creates the EntityAttribute object. For efficiency we assume the
-//	 * attribute does not already exist
-//	 * 
-//	 * @param attribute
-//	 * @param weight
-//	 * @throws BadDataException
-//	 */
-//	public EntityAttribute addAttribute(final Attribute attribute) throws BadDataException {
-//
-//		return addAttribute(attribute, 1.0);
-//	}
-//
-//	/**
-//	 * addAttribute This adds an attribute and associated weight to the baseEntity.
-//	 * It auto creates the EntityAttribute object. For efficiency we assume the
-//	 * attribute does not already exist
-//	 * 
-//	 * @param attribute
-//	 * @param weight
-//	 * @throws BadDataException
-//	 */
-//	public EntityAttribute addAttribute(final Attribute attribute, final Double weight) throws BadDataException {
-//		return addAttribute(attribute, weight, null);
-//	}
-//
-//	/**
-//	 * addAttribute This adds an attribute and associated weight to the baseEntity.
-//	 * It auto creates the EntityAttribute object. For efficiency we assume the
-//	 * attribute does not already exist
-//	 * 
-//	 * @param attribute
-//	 * @param weight
-//	 * @param value     (of type String, LocalDateTime, Long, Integer, Boolean
-//	 * @throws BadDataException
-//	 */
-//	public EntityAttribute addAttribute(final Attribute attribute, final Double weight, final Object value)
-//			throws BadDataException {
-//		if (attribute == null)
-//			throw new BadDataException("missing Attribute");
-//		if (weight == null)
-//			throw new BadDataException("missing weight");
-//
-//		final EntityAttribute entityAttribute = new EntityAttribute(this, attribute, weight, value);
-//		Optional<EntityAttribute> existing = findEntityAttribute(attribute.getCode());
-//		if (existing.isPresent()) {
-//			existing.get().setValue(value);
-//			existing.get().setWeight(weight);
-//			// removeAttribute(existing.get().getAttributeCode());
-//		} else {
-//			getBaseEntityAttributes().add(entityAttribute);
-//		}
-//		return entityAttribute;
-//	}
-//	/**
-//	 * addAttributeOmitCheck This adds an attribute and associated weight to the baseEntity.
-//	 * This method will NOT check and update any existing attributes. Use with Caution.
-//	 * 
-//	 * @param attribute
-//	 * @param weight
-//	 * @param value     (of type String, LocalDateTime, Long, Integer, Boolean
-//	 * @throws BadDataException
-//	 */
-//	public EntityAttribute addAttributeOmitCheck(final Attribute attribute, final Double weight, final Object value)
-//			throws BadDataException {
-//		if (attribute == null)
-//			throw new BadDataException("missing Attribute");
-//		if (weight == null)
-//			throw new BadDataException("missing weight");
-//
-//		final EntityAttribute entityAttribute = new EntityAttribute(this, attribute, weight, value);
-//		getBaseEntityAttributes().add(entityAttribute);
-//		
-//		return entityAttribute;
-//	}
-//
-//	/**
-//	 * removeAttribute This removes an attribute and associated weight from the
-//	 * baseEntity. For efficiency we assume the attribute exists
-//	 * 
-//	 * @param attributeCode
-//	 * @param weight
-//	 */
-//	public Boolean removeAttribute(final String attributeCode) {
-//		Boolean removed = false;
-//
-//		Iterator<EntityAttribute> i = this.baseEntityAttributes.iterator();
-//		while (i.hasNext()) {
-//			EntityAttribute ea = i.next();
-//			if (ea.getAttributeCode().equals(attributeCode)) {
-//				i.remove();
-//				removed = true;
-//				break;
-//			}
-//		}
-//
-//		return removed;
-//	}
+	/**
+	 * findEntityAttribute This returns an attributeEntity if it exists in the
+	 * baseEntity.
+	 * 
+	 * @param attributeCode
+	 * @returns Optional<EntityAttribute>
+	 */
+	public Optional<EntityAttribute> findEntityAttribute(final String attributeCode) {
+
+		Optional<EntityAttribute> foundEntity = null;
+
+		try {
+			foundEntity = baseEntityAttributes.stream().filter(x -> (x.attribute.code.equals(attributeCode)))
+					.findFirst();
+		} catch (Exception e) {
+			log.error("Error in fetching attribute value");
+		}
+
+//    Optional.of(getBaseEntityAttributes().stream()
+//            .filter(x -> (x.getAttribute().getCode().equals(attributeCode))).findFirst().get());
+
+		return foundEntity;
+	}
+
+	/**
+	 * findEntityAttribute This returns an attributeEntity if it exists in the
+	 * baseEntity. Could be more efficient in retrival (ACC: test)
+	 * 
+	 * @param attribute
+	 * @returns EntityAttribute
+	 */
+	public List<EntityAttribute> findPrefixEntityAttributes(final String attributePrefix) {
+		List<EntityAttribute> foundEntitys = baseEntityAttributes.stream()
+				.filter(x -> (x.attribute.code.startsWith(attributePrefix))).collect(Collectors.toList());
+
+		return foundEntitys;
+	}
+
+	/**
+	 * findEntityAttributes This returns attributeEntitys if it exists in the
+	 * baseEntity. Could be more efficient in retrival (ACC: test)
+	 * 
+	 * @param attribute
+	 * @returns EntityAttribute
+	 */
+	public EntityAttribute findEntityAttribute(final Attribute attribute) {
+		final EntityAttribute foundEntity = baseEntityAttributes.stream()
+				.filter(x -> (x.attribute.code.equals(attribute.code))).findFirst().get();
+
+		return foundEntity;
+	}
+
+	/**
+	 * addAttribute This adds an attribute with default weight of 0.0 to the
+	 * baseEntity. It auto creates the EntityAttribute object. For efficiency we
+	 * assume the attribute does not already exist
+	 * 
+	 * @param ea
+	 * @throws BadDataException
+	 */
+	public EntityAttribute addAttribute(final EntityAttribute ea) throws BadDataException {
+		if (ea == null)
+			throw new BadDataException("missing Attribute");
+
+		return addAttribute(ea.attribute, ea.getWeight(), ea.getValue());
+	}
+
+	/**
+	 * addAttribute This adds an attribute and associated weight to the baseEntity.
+	 * It auto creates the EntityAttribute object. For efficiency we assume the
+	 * attribute does not already exist
+	 * 
+	 * @param attribute
+	 * @param weight
+	 * @throws BadDataException
+	 */
+	public EntityAttribute addAttribute(final Attribute attribute) throws BadDataException {
+
+		return addAttribute(attribute, 1.0);
+	}
+
+	/**
+	 * addAttribute This adds an attribute and associated weight to the baseEntity.
+	 * It auto creates the EntityAttribute object. For efficiency we assume the
+	 * attribute does not already exist
+	 * 
+	 * @param attribute
+	 * @param weight
+	 * @throws BadDataException
+	 */
+	public EntityAttribute addAttribute(final Attribute attribute, final Double weight) throws BadDataException {
+		return addAttribute(attribute, weight, null);
+	}
+
+	/**
+	 * addAttribute This adds an attribute and associated weight to the baseEntity.
+	 * It auto creates the EntityAttribute object. For efficiency we assume the
+	 * attribute does not already exist
+	 * 
+	 * @param attribute
+	 * @param weight
+	 * @param value     (of type String, LocalDateTime, Long, Integer, Boolean
+	 * @throws BadDataException
+	 */
+	public EntityAttribute addAttribute(final Attribute attribute, final Double weight, final Object value)
+			throws BadDataException {
+		if (attribute == null)
+			throw new BadDataException("missing Attribute");
+		if (weight == null)
+			throw new BadDataException("missing weight");
+
+		final EntityAttribute entityAttribute = new EntityAttribute(this, attribute, weight, value);
+		Optional<EntityAttribute> existing = findEntityAttribute(attribute.code);
+		if (existing.isPresent()) {
+			existing.get().setValue(value);
+			existing.get().setWeight(weight);
+			// removeAttribute(existing.get().getAttributeCode());
+		} else {
+			baseEntityAttributes.add(entityAttribute);
+		}
+		return entityAttribute;
+	}
+	/**
+	 * addAttributeOmitCheck This adds an attribute and associated weight to the baseEntity.
+	 * This method will NOT check and update any existing attributes. Use with Caution.
+	 * 
+	 * @param attribute
+	 * @param weight
+	 * @param value     (of type String, LocalDateTime, Long, Integer, Boolean
+	 * @throws BadDataException
+	 */
+	public EntityAttribute addAttributeOmitCheck(final Attribute attribute, final Double weight, final Object value)
+			throws BadDataException {
+		if (attribute == null)
+			throw new BadDataException("missing Attribute");
+		if (weight == null)
+			throw new BadDataException("missing weight");
+
+		final EntityAttribute entityAttribute = new EntityAttribute(this, attribute, weight, value);
+		baseEntityAttributes.add(entityAttribute);
+		
+		return entityAttribute;
+	}
+
+	/**
+	 * removeAttribute This removes an attribute and associated weight from the
+	 * baseEntity. For efficiency we assume the attribute exists
+	 * 
+	 * @param attributeCode
+	 * @param weight
+	 */
+	public Boolean removeAttribute(final String attributeCode) {
+		Boolean removed = false;
+
+		Iterator<EntityAttribute> i = this.baseEntityAttributes.iterator();
+		while (i.hasNext()) {
+			EntityAttribute ea = i.next();
+			if (ea.attribute.code.equals(attributeCode)) {
+				i.remove();
+				removed = true;
+				break;
+			}
+		}
+
+		return removed;
+	}
 //
 //	/**
 //	 * addTarget This links this baseEntity to a target BaseEntity and associated
