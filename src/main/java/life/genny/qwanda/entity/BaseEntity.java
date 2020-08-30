@@ -544,210 +544,197 @@ public class BaseEntity extends PanacheEntity {
 ////        + baseEntityAttributes;
 ////  }
 //
-//	@Transient
-//	@XmlTransient
-//	@JsonIgnore
-//	public Set<EntityAttribute> merge(final BaseEntity entity) {
-//		final Set<EntityAttribute> changes = new HashSet<EntityAttribute>();
-//
-//		// go through the attributes in the entity and check if already existing , if so
-//		// then check the
-//		// value and override, else add new attribute
-//
-//		for (final EntityAttribute ea : entity.getBaseEntityAttributes()) {
-//			final Attribute attribute = ea.getAttribute();
-//			if (this.containsEntityAttribute(attribute.getCode())) {
-//				// check for update value
-//				final Object oldValue = this.getValue(attribute);
-//				final Object newValue = this.getValue(ea);
-//				if (newValue != null) {
-//					if (!newValue.equals(oldValue)) {
-//						// override the old value // TODO allow versioning
-//						try {
-//							this.setValue(attribute, this.getValue(ea), ea.getValueDouble());
-//						} catch (BadDataException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-//					}
-//				}
-//			} else {
-//				// add this new entityAttribute
-//				try {
-//					addAttribute(ea);
-//					changes.add(ea);
-//				} catch (final BadDataException e) {
-//					// TODO - log error and continue
-//				}
-//			}
-//		}
-//
-//		return changes;
-//	}
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	private <T> T getValue(final Attribute attribute) {
-//		// TODO Dumb find for attribute. needs a hashMap
-//
-//		for (final EntityAttribute ea : this.getBaseEntityAttributes()) {
-//			if (ea.getAttribute().getCode().equalsIgnoreCase(attribute.getCode())) {
-//				return getValue(ea);
-//			}
-//		}
-//		return null;
-//	}
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	private <T> T getValue(final EntityAttribute ea) {
-//		return ea.getValue();
-//
-//	}
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public <T> Optional<T> getValue(final String attributeCode) {
-//		Optional<EntityAttribute> ea = this.findEntityAttribute(attributeCode);
-//
-//		Optional<T> result = Optional.empty();
-//		if (ea.isPresent()) {
-//			if (ea.get() != null) {
-//				if (ea.get().getValue() != null) {
-//					result = Optional.of(ea.get().getValue());
-//				}
-//			}
-//		}
-//		return result;
-//
-//	}
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public <T> Optional<T> getLoopValue(final String attributeCode) {
-//		Optional<EntityAttribute> ea = this.findEntityAttribute(attributeCode);
-//
-//		Optional<T> result = Optional.empty();
-//		if (ea.isPresent()) {
-//			result = Optional.of(ea.get().getLoopValue());
-//		}
-//		return result;
-//
-//	}
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public String getValueAsString(final String attributeCode) {
-//		Optional<EntityAttribute> ea = this.findEntityAttribute(attributeCode);
-//		String result = null;
-//		if (ea.isPresent()) {
-//			if (ea.get() != null) {
-//				if (ea.get().getValue() != null) {
-//					result = ea.get().getAsString();
-//				}
-//			}
-//		}
-//		return result;
-//
-//	}
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public <T> T getValue(final String attributeCode, T defaultValue) {
-//		Optional<T> result = getValue(attributeCode);
-//		if (result.isPresent()) {
-//			if (!result.equals(Optional.empty())) {
-//				return result.get();
-//			}
-//		}
-//		return defaultValue;
-//	}
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public <T> T getLoopValue(final String attributeCode, T defaultValue) {
-//		Optional<T> result = getLoopValue(attributeCode);
-//		if (result.isPresent()) {
-//			if (!result.equals(Optional.empty())) {
-//				return result.get();
-//			}
-//		}
-//		return defaultValue;
-//	}
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public Boolean is(final String attributeCode) {
-//		Optional<EntityAttribute> ea = this.findEntityAttribute(attributeCode);
-//		Boolean result = false;
-//
-//		if (ea.isPresent()) {
-//			result = ea.get().getValueBoolean();
-//			if (result == null) {
-//				return false;
-//			}
-//		}
-//		return result;
-//
-//	}
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public <T> Optional<T> setValue(final Attribute attribute, T value, Double weight) throws BadDataException {
-//		Optional<EntityAttribute> oldValue = this.findEntityAttribute(attribute.getCode());
-//
-//		Optional<T> result = Optional.empty();
-//		if (oldValue.isPresent()) {
-//			if (oldValue.get().getLoopValue() != null) {
-//				result = Optional.of(oldValue.get().getLoopValue());
-//			}
-//			EntityAttribute ea = oldValue.get();
-//			ea.setValue(value);
-//			ea.setWeight(weight);
-//		} else {
-//			this.addAttribute(attribute, weight, value);
-//		}
-//		return result;
-//	}
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public <T> Optional<T> setValue(final Attribute attribute, T value) throws BadDataException {
-//		return setValue(attribute, value, 0.0);
-//	}
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public <T> Optional<T> setValue(final String attributeCode, T value) throws BadDataException {
-//		return setValue(attributeCode, value, 0.0);
-//	}
-//
-//	@JsonIgnore
-//	@Transient
-//	@XmlTransient
-//	public <T> Optional<T> setValue(final String attributeCode, T value, Double weight) throws BadDataException {
-//		Optional<EntityAttribute> oldValue = this.findEntityAttribute(attributeCode);
-//
-//		Optional<T> result = Optional.empty();
-//		if (oldValue.isPresent()) {
-//			if (oldValue.get().getLoopValue() != null) {
-//				result = Optional.of(oldValue.get().getLoopValue());
-//			}
-//			EntityAttribute ea = oldValue.get();
-//			ea.setValue(value);
-//			ea.setWeight(weight);
-//		}
-//		return result;
-//	}
+	@Transient
+	@JsonbTransient
+	public Set<EntityAttribute> merge(final BaseEntity entity) {
+		final Set<EntityAttribute> changes = new HashSet<EntityAttribute>();
+
+		// go through the attributes in the entity and check if already existing , if so
+		// then check the
+		// value and override, else add new attribute
+
+		for (final EntityAttribute ea : entity.baseEntityAttributes) {
+			final Attribute attribute = ea.attribute;
+			if (this.containsEntityAttribute(attribute.code)) {
+				// check for update value
+				final Object oldValue = this.getValue(attribute);
+				final Object newValue = this.getValue(ea);
+				if (newValue != null) {
+					if (!newValue.equals(oldValue)) {
+						// override the old value // TODO allow versioning
+						try {
+							this.setValue(attribute, this.getValue(ea), ea.getValueDouble());
+						} catch (BadDataException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			} else {
+				// add this new entityAttribute
+				try {
+					addAttribute(ea);
+					changes.add(ea);
+				} catch (final BadDataException e) {
+					// TODO - log error and continue
+				}
+			}
+		}
+
+		return changes;
+	}
+
+	@JsonbTransient
+	@Transient
+	private <T> T getValue(final Attribute attribute) {
+		// TODO Dumb find for attribute. needs a hashMap
+
+		for (final EntityAttribute ea : this.baseEntityAttributes) {
+			if (ea.attribute.code.equalsIgnoreCase(attribute.code)) {
+				return getValue(ea);
+			}
+		}
+		return null;
+	}
+
+	@JsonbTransient
+	@Transient
+	private <T> T getValue(final EntityAttribute ea) {
+		return ea.getValue();
+
+	}
+
+	@JsonbTransient
+	@Transient
+	public <T> Optional<T> getValue(final String attributeCode) {
+		Optional<EntityAttribute> ea = this.findEntityAttribute(attributeCode);
+
+		Optional<T> result = Optional.empty();
+		if (ea.isPresent()) {
+			if (ea.get() != null) {
+				if (ea.get().getValue() != null) {
+					result = Optional.of(ea.get().getValue());
+				}
+			}
+		}
+		return result;
+
+	}
+
+	@JsonbTransient
+	@Transient
+	public <T> Optional<T> getLoopValue(final String attributeCode) {
+		Optional<EntityAttribute> ea = this.findEntityAttribute(attributeCode);
+
+		Optional<T> result = Optional.empty();
+		if (ea.isPresent()) {
+			result = Optional.of(ea.get().getLoopValue());
+		}
+		return result;
+
+	}
+
+	@JsonbTransient
+	@Transient
+	public String getValueAsString(final String attributeCode) {
+		Optional<EntityAttribute> ea = this.findEntityAttribute(attributeCode);
+		String result = null;
+		if (ea.isPresent()) {
+			if (ea.get() != null) {
+				if (ea.get().getValue() != null) {
+					result = ea.get().getAsString();
+				}
+			}
+		}
+		return result;
+
+	}
+
+	@JsonbTransient
+	@Transient
+	public <T> T getValue(final String attributeCode, T defaultValue) {
+		Optional<T> result = getValue(attributeCode);
+		if (result.isPresent()) {
+			if (!result.equals(Optional.empty())) {
+				return result.get();
+			}
+		}
+		return defaultValue;
+	}
+
+	@JsonbTransient
+	@Transient
+	public <T> T getLoopValue(final String attributeCode, T defaultValue) {
+		Optional<T> result = getLoopValue(attributeCode);
+		if (result.isPresent()) {
+			if (!result.equals(Optional.empty())) {
+				return result.get();
+			}
+		}
+		return defaultValue;
+	}
+
+	@JsonbTransient
+	@Transient
+	public Boolean is(final String attributeCode) {
+		Optional<EntityAttribute> ea = this.findEntityAttribute(attributeCode);
+		Boolean result = false;
+
+		if (ea.isPresent()) {
+			result = ea.get().getValueBoolean();
+			if (result == null) {
+				return false;
+			}
+		}
+		return result;
+
+	}
+
+	@JsonbTransient
+	@Transient
+	public <T> Optional<T> setValue(final Attribute attribute, T value, Double weight) throws BadDataException {
+		Optional<EntityAttribute> oldValue = this.findEntityAttribute(attribute.code);
+
+		Optional<T> result = Optional.empty();
+		if (oldValue.isPresent()) {
+			if (oldValue.get().getLoopValue() != null) {
+				result = Optional.of(oldValue.get().getLoopValue());
+			}
+			EntityAttribute ea = oldValue.get();
+			ea.setValue(value);
+			ea.setWeight(weight);
+		} else {
+			this.addAttribute(attribute, weight, value);
+		}
+		return result;
+	}
+
+	@JsonbTransient
+	@Transient
+	public <T> Optional<T> setValue(final Attribute attribute, T value) throws BadDataException {
+		return setValue(attribute, value, 0.0);
+	}
+
+	@JsonbTransient
+	@Transient
+	public <T> Optional<T> setValue(final String attributeCode, T value) throws BadDataException {
+		return setValue(attributeCode, value, 0.0);
+	}
+
+	@JsonbTransient
+	@Transient
+	public <T> Optional<T> setValue(final String attributeCode, T value, Double weight) throws BadDataException {
+		Optional<EntityAttribute> oldValue = this.findEntityAttribute(attributeCode);
+
+		Optional<T> result = Optional.empty();
+		if (oldValue.isPresent()) {
+			if (oldValue.get().getLoopValue() != null) {
+				result = Optional.of(oldValue.get().getLoopValue());
+			}
+			EntityAttribute ea = oldValue.get();
+			ea.setValue(value);
+			ea.setWeight(weight);
+		}
+		return result;
+	}
 }
