@@ -2,6 +2,7 @@ package life.genny.qwanda.attribute;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Date;
 
 import javax.json.bind.annotation.JsonbTransient;
 import javax.json.bind.annotation.JsonbTypeAdapter;
@@ -9,7 +10,10 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -134,31 +138,31 @@ public class EntityAttribute extends PanacheEntity {
 //	 *            attributes)
 //	 */
 //
-//	@PreUpdate
-//	public void autocreateUpdate() {
-//		updated = LocalDateTime.now(ZoneId.of("UTC"));
-//	}
-//
-//	@PrePersist
-//	public void autocreateCreated() {
-//		if (created == null)
-//			created = LocalDateTime.now(ZoneId.of("UTC"));
-//	}
-//
-//	@Transient
-//	@JsonIgnore
-//	public Date getCreatedDate() {
-//		final Date out = Date.from(created.atZone(ZoneId.systemDefault()).toInstant());
-//		return out;
-//	}
-//
-//	@Transient
-//	@JsonIgnore
-//	public Date getUpdatedDate() {
-//		if (updated==null) return null;
-//		final Date out = Date.from(updated.atZone(ZoneId.systemDefault()).toInstant());
-//		return out;
-//	}
+	@PreUpdate
+	public void autocreateUpdate() {
+		updated = LocalDateTime.now(ZoneId.of("UTC"));
+	}
+
+	@PrePersist
+	public void autocreateCreated() {
+		if (created == null)
+			created = LocalDateTime.now(ZoneId.of("UTC"));
+	}
+
+	@Transient
+	@JsonbTransient
+	public Date getCreatedDate() {
+		final Date out = Date.from(created.atZone(ZoneId.systemDefault()).toInstant());
+		return out;
+	}
+
+	@Transient
+	@JsonbTransient
+	public Date getUpdatedDate() {
+		if (updated==null) return null;
+		final Date out = Date.from(updated.atZone(ZoneId.systemDefault()).toInstant());
+		return out;
+	}
 //
 //	@SuppressWarnings("unchecked")
 //	@JsonIgnore
