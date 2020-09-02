@@ -96,6 +96,11 @@ public class BaseEntity extends PanacheEntity {
 	private static final String REGEX_REALM = "[a-zA-Z0-9]+";
 	private static final String DEFAULT_REALM = "genny";
 	
+	
+	@Column(name = "active")
+	public Boolean active=true;
+
+	
 	@NotEmpty
 	@JsonbTransient
 	@Pattern(regexp = REGEX_REALM, message = "Must be valid Realm Format!")

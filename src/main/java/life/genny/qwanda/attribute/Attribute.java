@@ -96,7 +96,6 @@ public class Attribute extends PanacheEntity {
 	 * 
 	 */
 
-
 	@NotEmpty
 	@JsonbTransient
 	@Pattern(regexp = REGEX_REALM, message = "Must be valid Realm Format!")

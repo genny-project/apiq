@@ -78,10 +78,11 @@ public class EntityAttribute extends PanacheEntity {
 	// For compatibility initially
 	public String baseEntityCode;
 	public String attributeCode;
+	public String attributeName;
 
 	@Embedded
 	@NotNull
-	public Value value;
+	public Value value = new Value();
 
 	public Boolean readonly = false;
 
