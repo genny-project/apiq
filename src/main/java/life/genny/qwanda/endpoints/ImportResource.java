@@ -1,6 +1,7 @@
 package life.genny.qwanda.endpoints;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -50,11 +51,13 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.quarkus.security.identity.SecurityIdentity;
 import life.genny.notes.utils.LocalDateTimeAdapter;
 import life.genny.qwanda.GennyToken;
+import life.genny.qwanda.Value;
 import life.genny.qwanda.attribute.Attribute;
 import life.genny.qwanda.attribute.EntityAttribute;
 import life.genny.qwanda.datatype.DataType;
 import life.genny.qwanda.entity.BaseEntity;
 import life.genny.qwanda.entity.EntityEntity;
+import life.genny.qwanda.entity.EntityQuestion;
 import life.genny.qwanda.message.QDataAttributeMessage;
 import life.genny.qwanda.message.QDataBaseEntityMessage;
 import life.genny.qwanda.validation.Validation;
@@ -142,7 +145,7 @@ public class ImportResource {
 
 	@GET
 	@Path("/baseentitys")
-	@Transactional
+	//@Transactional
 	//@TransactionConfiguration()
 	public Response importBaseentitys(@Context UriInfo uriInfo, @QueryParam("url") String externalGennyUrl) {
 		GennyToken userToken = new GennyToken(accessToken.getRawToken());
@@ -174,41 +177,50 @@ public class ImportResource {
 //				JsonElement tradeElement = parser.parse(jsonString);
 //				JsonArray attributeValues = tradeElement.getAsJsonArray();
 //
-//				try {
-//					userTransaction.setTransactionTimeout(5600);
-//					userTransaction.begin();
 
+					List<BaseEntity> baseentitys = new ArrayList<>();
+				
 					/* we loop through the attribute values */
+					int size = items.size();
 					for (int i = 0; i < items.size(); i++) {
 
 						BaseEntity be = new BaseEntity();
 
 						JsonObject beJson = items.get(i).getAsJsonObject();
 						String code = beJson.get("code").getAsString();
-						LocalDateTime created = ImportResource.getLocalDateTime(beJson.get("created"));
-						LocalDateTime updated = ImportResource.getLocalDateTime(beJson.get("updated"));
+						LocalDateTime created = Value.getDateTime(beJson.get("created"));
+						LocalDateTime updated = Value.getDateTime(beJson.get("updated"));
 						String name = beJson.get("name").getAsString();
-
+						String realm = beJson.get("realm").getAsString();
+						
+						be.realm = realm;
+						be.active = true;
 						be.code = code;
 						be.name = name;
 						be.created = created;
 						be.updated = updated;
-						be.persist();
+					//	be.persist();
 
 						JsonArray bes = beJson.getAsJsonArray("baseEntityAttributes");
 
 						for (int e = 0; e < bes.size(); e++) {
 							JsonObject ea = bes.get(e).getAsJsonObject();
+							
 							String attributeCode = ea.get("attributeCode").getAsString();
 							String attributeName = ea.get("attributeName").getAsString();
 							Boolean readonly = ea.get("readonly").getAsBoolean();
 							Boolean inferred = ea.get("inferred").getAsBoolean();
 							Boolean privacyFlag = ea.get("privacyFlag").getAsBoolean();
 							Double weight = ea.get("weight").getAsDouble();
-							LocalDateTime createdEA = ImportResource.getLocalDateTime(ea.get("created"));
-							LocalDateTime updatedEA = ImportResource.getLocalDateTime(ea.get("updated"));
+							
+							LocalDateTime createdEA = Value.getDateTime(ea.get("created"));
+							LocalDateTime updatedEA = Value.getDateTime(ea.get("updated"));
+							
+							Value value = Value.getValueFromJsonObject(ea);
+							
 							// String valueString =
 							EntityAttribute eat = new EntityAttribute();
+							eat.realm = be.realm;
 							eat.attributeCode = attributeCode;
 							eat.attributeName = attributeName;
 							Attribute attribute = Attribute.find("code", attributeCode).firstResult();
@@ -219,11 +231,15 @@ public class ImportResource {
 							eat.setWeight(weight);
 							eat.created = createdEA;
 							eat.updated = updatedEA;
+							eat.value = value;
 							eat.baseentity = be;
 							eat.baseEntityCode = be.code;
-							eat.persist();
-
+						//	eat.persist();
+							
+							be.baseEntityAttributes.add(eat);
 						}
+						
+						
 
 						JsonArray links = beJson.getAsJsonArray("links");
 						for (int link = 0; link < links.size(); link++) {
@@ -233,15 +249,24 @@ public class ImportResource {
 							String attributeCode = lnk.get("attributeCode").getAsString();
 							String targetCode = lnk.get("targetCode").getAsString();
 							String sourceCode = lnk.get("sourceCode").getAsString();
-							String linkValue = lnk.get("linkValue").getAsString();
-							Double weight = lnk.get("weight").getAsDouble();
+							JsonElement lnkJE = lnk.get("linkValue");
+							String linkValue = null;
+							if (lnkJE != null) {
+								linkValue = lnkJE.getAsString();
+							}
 							
-							LocalDateTime createdEE = ImportResource.getLocalDateTime(l.get("created"));
-							String valueStringEE = l.get("valueString").getAsString();
-							Double weightEE = l.get("weight").getAsDouble();
+							LocalDateTime createdEE = Value.getDateTime(l.get("created"));
+							Value value = Value.getValueFromJsonObject(l);
 							
 							EntityEntity ee = new EntityEntity();
 							Attribute attribute = Attribute.find("code", attributeCode).firstResult();
+							if (attribute == null) {
+								log.error("NO ATTRIBUTE FOUND FOR ["+attributeCode+"] with "+Attribute.count()+" attributes");
+								DataType dtt = new DataType(BaseEntity.class);
+								attribute = new Attribute(attributeCode,attributeCode, dtt);
+								//attribute.persist();
+							}
+							ee.realm = be.realm;
 							ee.attribute = attribute;
 							ee.attributeCode = attributeCode;
 							ee.sourceCode = sourceCode;
@@ -249,51 +274,90 @@ public class ImportResource {
 							ee.created = createdEE;
 							ee.value.dataType = attribute.dataType;
 							ee.value.valueString = linkValue;
-							ee.value.weight = weight;
+							ee.value.weight = value.weight;
 							
 							ee.link.attributeCode = attributeCode;
 							ee.link.linkValue = linkValue;
 							ee.link.sourceCode = sourceCode;
 							ee.link.targetCode = targetCode;
-							ee.link.weight = weight;
+							ee.link.weight = value.weight;
 
-							ee.persist();
-
+							//ee.persist();
+							be.links.add(ee);
 						}
 
 						JsonArray questions = beJson.getAsJsonArray("questions");
 
 						for (int q = 0; q < questions.size(); q++) {
-							JsonObject question = questions.get(q).getAsJsonObject();
-
+							JsonObject questionQ = questions.get(q).getAsJsonObject();
+							String valueStringQ = questionQ.get("valueString").getAsString();
+							Double weightQ = questionQ.get("weight").getAsDouble();
+							JsonObject lnkQ = questionQ.getAsJsonObject("link");
+							String attributeCodeQ = lnkQ.get("attributeCode").getAsString();
+							String targetCodeQ = lnkQ.get("targetCode").getAsString();
+							String sourceCodeQ = lnkQ.get("sourceCode").getAsString();
+							Value value = Value.getValueFromJsonObject(lnkQ);
+							
+							EntityQuestion eq = new EntityQuestion();
+							eq.link.attributeCode = attributeCodeQ;
+							JsonElement je = lnkQ.get("linkValue");
+							if (je != null) {
+								eq.link.linkValue = je.getAsString();
+							}
+							eq.link.sourceCode = sourceCodeQ;
+							eq.link.targetCode = targetCodeQ;
+							eq.link.weight = value.weight;
+							eq.value.valueString = valueStringQ;
+							eq.value.weight = weightQ;
+							eq.persist();
+							be.questions.add(eq);
 						}
-
-						System.out.println(code);
+					//	be.persist();
+						log.info(i+" of "+size+" -> "+code);
+						baseentitys.add(be);
 					}
-//					userTransaction.commit();
-//
-//				} catch (SystemException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (NotSupportedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (SecurityException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (IllegalStateException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (RollbackException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (HeuristicMixedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (HeuristicRollbackException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+					
+					
+					log.info("SAVING!");
+					
+					try {
+						userTransaction.setTransactionTimeout(5600);
+						userTransaction.begin();
+				int i=0;
+				for (BaseEntity b : baseentitys) {
+					
+					if (i % 20 == 0) { // 20, same as the JDBC batch size
+				        // flush a batch of inserts and release memory:
+				        b.persistAndFlush();
+				    } else {
+				    	b.persist();
+				    }
+					log.info("SAVING "+(i++)+" of "+size+" -> "+b.code);
+				}
+					userTransaction.commit();
+					log.info("Finished saving "+baseentitys.size()+" bes");
+				} catch (SystemException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NotSupportedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalStateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (RollbackException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (HeuristicMixedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (HeuristicRollbackException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 //				QDataBaseEntityMessage beMsg = JsonUtils.fromJson(jsonString, QDataBaseEntityMessage.class);
 //				BaseEntity[] beArray = beMsg.getItems();
@@ -310,6 +374,7 @@ public class ImportResource {
 
 	}
 
+	
 	private String fixJson(String resultStr) {
 		String resultStr2 = resultStr.replaceAll(Pattern.quote("\\\""), Matcher.quoteReplacement("\""));
 		String resultStr3 = resultStr2.replaceAll(Pattern.quote("\\n"), Matcher.quoteReplacement("\n"));
@@ -337,39 +402,6 @@ public class ImportResource {
 		log.info("Import Endpoint Shutting down");
 	}
 
-	static public LocalDateTime getLocalDateTime(JsonElement jsonElement) {
-		if (jsonElement == null) {
-			return null;
-		}
-		String str = jsonElement.getAsString();
-		String dateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
-		// str = str.substring(0,str.length()-1);
-		String value = str;// .substring(1);
-		LocalDateTime ret = null;
 
-		try {
-			ret = dateFormatter.parse(value, LocalDateTime::from);
-		} catch (Exception e) {
-			dateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.SS";
-			dateFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
-			try {
-				ret = dateFormatter.parse(value, LocalDateTime::from);
-			} catch (Exception ee) {
-				dateTimePattern = "yyyy-MM-dd'T'HH:mm:ss.S";
-				dateFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
-				try {
-					ret = dateFormatter.parse(value, LocalDateTime::from);
-				} catch (Exception eee) {
-					dateTimePattern = "yyyy-MM-dd'T'HH:mm:ss";
-					dateFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
-					ret = dateFormatter.parse(value, LocalDateTime::from);
-				}
-			}
-
-		}
-
-		return ret;
-	}
 
 }

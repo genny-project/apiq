@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Notes</title>
+    <title>BaseEntitys</title>
     <style>
         h1, h2, h3, h4, h5, h6 {
             margin-bottom: 0.5rem;
@@ -105,20 +105,22 @@
 <body>
 
 <div class="banner lead">
-    Notes
+    BaseEntitys
 </div>
 
 <div class="container">
     <div class="left-column">
-        <p class="lead"> Notes</p>
+        <p class="lead"> BaseEntitys</p>
         <div class="table">
             <table style="width: 100%;" id="queuetable" class="table table-striped table-bordered table-sm table-condensed">
                 <thead class="thead-dark">
                 <tr>
-                <th>time</th>
-                    <th>source</th>
-                    <th>target</th>
-                    <th>content</th>
+                <th>realm</th>
+                <th>id</th>
+                    <th>code</th>
+                    <th>name</th>
+                    <th>created</th>
+                    <th>updated</th>
                    </tr>
 
  
@@ -137,16 +139,16 @@
         <div class="right-section">
             <h3>Application</h3>
             <ul>
-                <li>GroupId: life.genny.notes</li>
+                <li>GroupId: life.genny.qwanda</li>
                 <li>ArtifactId: quarkus</li>
                 <li>Version: 1.0-SNAPSHOT</li>
-                <li>Quarkus Version: 1.5.2</li>
+                <li>Quarkus Version: 1.7.1</li>
             </ul>
         </div>
         <div class="right-section">
             <h3>Next steps</h3>
             <ul>
-                <li><a href="https://m.internmatch.io">Notes</a></li>
+                <li><a href="https://m.internmatch.io">BaseEntitys</a></li>
             </ul>
         </div>
     </div>
@@ -158,7 +160,7 @@
     $('#queuetable').DataTable({
        pagingType: "full_numbers",
       serverSide: true,
-      ajax: '/v7/notes/datatable?length=1000',
+      ajax: '/qwanda/baseentitys/datatable?length=1000',
       language: {
         search: ""
       },
@@ -166,23 +168,31 @@
       lengthChange: true,
       pageLength: 1000,
       columns: [
+    	   {
+               name: 'Realm',
+               data: 'realm'
+             },
           {
-              name: 'Time',
-              data: 'created'
+              name: 'id',
+              data: 'id'
             },
         {
-          name: 'Source',
-          data: 'sourceCode'
+          name: 'Code',
+          data: 'code'
         },
         {
-            name: 'Target',
-            data: 'targetCode'
+            name: 'Name',
+            data: 'name'
           },
 
         {
-            name: 'Content',
-            data: 'content'
-          } 
+            name: 'Created',
+            data: 'created'
+          } ,
+          {
+              name: 'Updated',
+              data: 'updated'
+            } 
 
       ]
     });

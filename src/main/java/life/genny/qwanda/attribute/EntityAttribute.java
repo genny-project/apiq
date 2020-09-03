@@ -21,6 +21,8 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Index;
 
 //
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -34,15 +36,15 @@ import life.genny.qwanda.entity.BaseEntity;
 
 @Entity
 
-@Table(name = "qbaseentity_attribute")
-//indexes = {
-//	//	@Index(columnList = "baseEntityCode", name = "ba_idx"),
-//		@Index(columnList = "attributeCode", name = "ba_idx"),
-//		@Index(columnList = "valueString", name = "ba_idx"),
-//        @Index(columnList = "valueBoolean", name = "ba_idx")
-//    },
-//uniqueConstraints = @UniqueConstraint(columnNames = {"attributeCode","baseEntityCode","realm"})
-//)
+@Table(name = "qbaseentity_attribute",
+indexes = {
+		@Index(columnList = "baseEntityCode", name = "ba_idx"),
+		@Index(columnList = "attributeCode", name = "ba_idx"),
+		@Index(columnList = "valueString", name = "ba_idx"),
+        @Index(columnList = "valueBoolean", name = "ba_idx")
+    },
+uniqueConstraints = @UniqueConstraint(columnNames = {"attributeCode","baseEntityCode","realm"})
+)
 
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)

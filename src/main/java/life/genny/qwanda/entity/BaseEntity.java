@@ -75,7 +75,8 @@ import life.genny.qwanda.exception.BadDataException;
 @Entity
 @Table(name = "qbaseentity", 
 indexes = {
-        @Index(columnList = "code", name =  "code_idx"),
+		@Index(columnList = "active", name =  "code_idx"),
+		@Index(columnList = "code", name =  "code_idx"),
         @Index(columnList = "realm", name = "code_idx")
     },
 uniqueConstraints = @UniqueConstraint(columnNames = {"code", "realm"}))
@@ -133,7 +134,9 @@ public class BaseEntity extends PanacheEntity {
 //	@Cascade({ CascadeType.MERGE, CascadeType.DELETE })
 //	@Expose
 //	/* Stores the links of BaseEntity to another BaseEntity */
-//	private Set<EntityEntity> links = new LinkedHashSet<>();
+    @OneToMany(cascade = CascadeType.ALL,  fetch = FetchType.LAZY, orphanRemoval=true)
+	public Set<EntityEntity> links = new HashSet<>();
+
 
 
 	@Transient

@@ -21,6 +21,7 @@ import org.jboss.logging.Logger;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import life.genny.qwanda.Link;
 import life.genny.qwanda.Value;
 //
 //import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -37,9 +38,9 @@ public class EntityQuestion  extends PanacheEntity implements Serializable, Comp
 //
 	@Embedded
 	@NotNull
-	public Value value;
+	public Value value = new Value();
 //
-////	private Link link;
+	public Link link = new Link();
 //
 	public EntityQuestion() {
 	}

@@ -22,6 +22,9 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.annotations.Type;
 import org.jboss.logging.Logger;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import life.genny.qwanda.datatype.DataType;
 
@@ -353,5 +356,181 @@ public class Value implements Serializable,Comparable<Value> {
 //	    }
 //	 
 //	}
+	
+
+	static public Value getValueFromJsonObject(JsonObject json)
+	{
+		Value value = new Value();
+		value.valueString = getString(json);
+		value.valueBoolean = getBoolean(json);
+		value.valueLong = getLong(json);
+		value.valueDouble = getDouble(json);
+		value.valueDateTime = getDateTime(json);
+		value.valueDate = getDate(json);
+		value.valueTime = getTime(json);
+		value.weight = getWeight(json);
+		
+		return value;
+	}
+	
+
+	static public  String getString(JsonObject jsonObject)
+	{
+		JsonElement je = jsonObject.get("valueString");
+		if (je != null) {
+			return je.getAsString();
+		} else {
+			return null;
+		}
+	}
+	
+
+	static public  Boolean getBoolean(JsonObject jsonObject)
+	{
+		JsonElement je = jsonObject.get("valueBoolean");
+		if (je != null) {
+			return je.getAsBoolean();
+		} else {
+			return null;
+		}
+	}
+	
+
+	static public  Double getDouble(JsonObject jsonObject)
+	{
+		JsonElement je = jsonObject.get("valueDouble");
+		if (je != null) {
+			return je.getAsDouble();
+		} else {
+			return null;
+		}
+	}
+	
+	static public  Double getWeight(JsonObject jsonObject)
+	{
+		JsonElement je = jsonObject.get("weight");
+		if (je != null) {
+			return je.getAsDouble();
+		} else {
+			return 0.0;
+		}
+	}
+	
+	
+	
+	static public  Long getLong(JsonObject jsonObject)
+	{
+		JsonElement je = jsonObject.get("valueLong");
+		if (je != null) {
+			return je.getAsLong();
+		} else {
+			return null;
+		}
+	}
+	
+
+	static public  Integer getInteger(JsonObject jsonObject)
+	{
+		JsonElement je = jsonObject.get("valueInteger");
+		if (je != null) {
+			return je.getAsInt();
+		} else {
+			return null;
+		}
+	}
+	
+	
+	static public  LocalDateTime getDateTime(JsonObject jsonObject)
+	{
+		JsonElement je = jsonObject.get("valueDateTime");
+		if (je != null) {
+			return Value.getDateTime(je);
+		} else {
+			return null;
+		}
+	}
+	
+
+	static public  LocalDate getDate(JsonObject jsonObject)
+	{
+		JsonElement je = jsonObject.get("valueDate");
+		if (je != null) {
+			return Value.getDate(je);
+		} else {
+			return null;
+		}
+	}
+	
+	static public  LocalTime getTime(JsonObject jsonObject)
+	{
+		JsonElement je = jsonObject.get("valueTime");
+		if (je != null) {
+			return Value.getTime(je);
+		} else {
+			return null;
+		}
+	}
+	
+	static public LocalDateTime getDateTime(JsonElement jsonElement) {
+		if (jsonElement == null) {
+			return null;
+		}
+		String value = jsonElement.getAsString();
+		
+		List<String> formatStrings = Arrays.asList("yyyy-MM-dd", "yyyy-MM-dd'T'HH:mm:ss",
+				"yyyy-MM-dd'T'HH:mm:ss.SSSZ","yyyy-MM-dd'T'HH:mm:ss.SSS","yyyy-MM-dd'T'HH:mm:ss.SS","yyyy-MM-dd'T'HH:mm:ss.S");
+		for (String formatString : formatStrings) {
+			try {
+				Date olddate = new SimpleDateFormat(formatString).parse(value);
+				final LocalDateTime dateTime = olddate.toInstant().atZone(ZoneId.systemDefault())
+						.toLocalDateTime();
+				return dateTime;
+				
+			} catch (ParseException e) {
+			}
+
+		}
+		return null;
+	}
+	
+	static public LocalDate getDate(JsonElement jsonElement) {
+		if (jsonElement == null) {
+			return null;
+		}
+		String value = jsonElement.getAsString();
+		
+		Date olddate = null;
+		try {
+			olddate = DateUtils.parseDate(value, "M/y", "yyyy-MM-dd", "yyyy/MM/dd",
+					"yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		} catch (java.text.ParseException e) {
+			try {
+				olddate = DateUtils.parseDate(value, "yyyy-MM-dd", "yyyy-MM-dd'T'HH:mm:ss",
+						"yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+			} catch (ParseException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		final LocalDate date = olddate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
+		return date;
+	}
+	
+	static public LocalTime getTime(JsonElement jsonElement) {
+		if (jsonElement == null) {
+			return null;
+		}
+		String value = jsonElement.getAsString();
+		
+		Date olddate = null;
+		try {
+			olddate = DateUtils.parseDate(value, "HH:mm:ss", "HH:mm:ss.SSSZ","HH:mm:ss.S","HH:mm:ss.SS","HH:mm:ss.SSS");
+		} catch (java.text.ParseException e) {
+		}
+		final LocalTime time = olddate.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+		
+		return time;
+	}
 
 }
