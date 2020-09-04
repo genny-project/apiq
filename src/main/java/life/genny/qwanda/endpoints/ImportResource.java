@@ -18,6 +18,7 @@ import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
+import javax.transaction.Transaction;
 import javax.transaction.Transactional;
 import javax.transaction.UserTransaction;
 import javax.ws.rs.Consumes;
@@ -83,6 +84,7 @@ public class ImportResource {
 
 	@Inject
 	UserTransaction userTransaction;
+	
 
 	@OPTIONS
 	public Response opt() {
@@ -321,7 +323,12 @@ public class ImportResource {
 					log.info("SAVING!");
 					
 					try {
-						userTransaction.setTransactionTimeout(5600);
+						userTransaction.setTransactionTimeout(10000);
+					//	userTransaction.setBatchSize(100);
+				        // Don't bother getting generated keys
+					//	userTransaction.setBatchGetGeneratedKeys(false);
+				        // Skip cascading persist 
+					//	userTransaction.setPersistCascade(false);
 						userTransaction.begin();
 				int i=0;
 				for (BaseEntity b : baseentitys) {

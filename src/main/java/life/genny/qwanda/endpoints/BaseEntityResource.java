@@ -1,10 +1,8 @@
 package life.genny.qwanda.endpoints;
 
 import java.net.URI;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -37,13 +35,11 @@ import io.quarkus.runtime.StartupEvent;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import life.genny.qwanda.DataTable;
 import life.genny.qwanda.GennyToken;
-import life.genny.qwanda.attribute.Attribute;
 import life.genny.qwanda.attribute.EntityAttribute;
 import life.genny.qwanda.entity.BaseEntity;
-import life.genny.qwanda.message.QDataEntityAttributeMessage;
 
 
-@Path("/qwanda/entityattributes")
+@Path("/qwanda/baseentitys")
 @RegisterForReflection
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
