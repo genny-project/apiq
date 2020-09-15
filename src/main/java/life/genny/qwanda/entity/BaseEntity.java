@@ -42,9 +42,12 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.jboss.logging.Logger;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -744,5 +747,41 @@ public class BaseEntity extends PanacheEntity {
 			ea.setWeight(weight);
 		}
 		return result;
+	}
+	
+
+	@JsonbTransient
+	@Transient
+	public void setPrivate(final Attribute attribute, final Boolean state)
+	{
+		Optional<EntityAttribute> optEa = this.findEntityAttribute(attribute.code);
+		if (optEa.isPresent()) {
+			EntityAttribute ea = optEa.get();
+			ea.privacyFlag = state;
+		} 
+	}
+	
+
+	@Transient
+	@JsonbTransient
+	public void setInferred(final Attribute attribute, final Boolean state)
+	{
+		Optional<EntityAttribute> optEa = this.findEntityAttribute(attribute.code);
+		if (optEa.isPresent()) {
+			EntityAttribute ea = optEa.get();
+			ea.inferred = state;
+		} 
+	}
+	
+
+	@Transient
+	@JsonbTransient
+	public void setReadonly(final Attribute attribute, final Boolean state)
+	{
+		Optional<EntityAttribute> optEa = this.findEntityAttribute(attribute.code);
+		if (optEa.isPresent()) {
+			EntityAttribute ea = optEa.get();
+			ea.readonly = state;
+		} 
 	}
 }
