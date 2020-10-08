@@ -1,33 +1,5 @@
 package life.genny.qwanda.endpoints;
 
-import java.net.URI;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
-
-import org.eclipse.microprofile.jwt.JsonWebToken;
-import org.jboss.logging.Logger;
-
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Parameters;
 import io.quarkus.runtime.ShutdownEvent;
@@ -37,6 +9,22 @@ import life.genny.qwanda.DataTable;
 import life.genny.qwanda.GennyToken;
 import life.genny.qwanda.attribute.EntityAttribute;
 import life.genny.qwanda.entity.BaseEntity;
+import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.jboss.logging.Logger;
+
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.validation.Valid;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 
 @Path("/qwanda/baseentitys")
@@ -69,11 +57,11 @@ public class BaseEntityResource {
 					Status.FORBIDDEN);				
 		}
 		
-		entity.id = null;
+		entity.setId(null);
 		entity.persist();
 		log.info("Received BaseEntity ! "+entity);
 
-		URI uri = uriInfo.getAbsolutePathBuilder().path(BaseEntityResource.class, "findById").build(entity.id);
+		URI uri = uriInfo.getAbsolutePathBuilder().path(BaseEntityResource.class, "findById").build(entity.getId());
 		return Response.created(uri).build();	}
 	
 	
@@ -186,7 +174,7 @@ public class BaseEntityResource {
             throw new WebApplicationException("BaseEntity with id of " + id + " does not exist.", Status.NOT_FOUND);
         }
  
-        BaseEntity.deleteById(item.id);
+        BaseEntity.deleteById(item.getId());
         
         return Response.status(Status.OK).build();
     }
