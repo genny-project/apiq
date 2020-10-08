@@ -411,6 +411,7 @@
                                 </goals>
                                 <configuration>
                                     <enableHttpUrlHandler>true</enableHttpUrlHandler>
+                                    <reportErrorsAtRuntime>true</reportErrorsAtRuntime>
                                 </configuration>
                             </execution>
                         </executions>
