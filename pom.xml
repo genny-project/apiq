@@ -91,6 +91,11 @@
             <artifactId>qwandaq</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>3.4.2</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -412,6 +417,9 @@
                                 <configuration>
                                     <enableHttpUrlHandler>true</enableHttpUrlHandler>
                                     <reportErrorsAtRuntime>true</reportErrorsAtRuntime>
+                                    <additionalBuildArgs>
+                                        <arg>--allow-incomplete-classpath</arg>
+                                    </additionalBuildArgs>
                                 </configuration>
                             </execution>
                         </executions>
