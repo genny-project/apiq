@@ -18,10 +18,10 @@
 		<mysql.test.port>3333</mysql.test.port>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<quarkus-plugin.version>1.7.1.Final</quarkus-plugin.version>
+		<quarkus-plugin.version>1.10.2.Final</quarkus-plugin.version>
 		<quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
 		<quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-		<quarkus.platform.version>1.7.1.Final</quarkus.platform.version>
+		<quarkus.platform.version>1.10.2.Final</quarkus.platform.version>
 		<qwanda.version>${project.version}</qwanda.version>
 		<surefire.version>3.0.0-M5</surefire.version>
 		<testcontainers.version>1.14.1</testcontainers.version>
@@ -216,11 +216,13 @@
 							</run>
 						</image>
 						<image>
-							<name>quay.io/keycloak/keycloak:11.0.0</name>
+							<name>crowtech/keycloak:latest</name>
 							<run>
 								<env>
 									<KEYCLOAK_USER>admin</KEYCLOAK_USER>
 									<KEYCLOAK_PASSWORD>admin</KEYCLOAK_PASSWORD>
+									<DB_VENDOR>h2</DB_VENDOR>
+									<KEYCLOAK_IMPORT>/tmp/quarkus-realm.json</KEYCLOAK_IMPORT>
 								</env>
 								<ports>
 									<port>${keycloak.test.port}:8180</port>
@@ -231,7 +233,7 @@
 									<color>yellow</color>
 								</log>
 								<wait>
-									<log>ready for connections</log>
+									<log>started in</log>
 									<time>40000</time>
 									<shutdown>5000</shutdown>
 									<kill>5000</kill>

@@ -112,7 +112,7 @@ public class Validation extends PanacheEntity {
 	 * Note that this regex needs to be applied to the complete value (Not partial).
 	 */
 	@NotNull
-	@Column(name = "regex", length = 128, updatable = true, nullable = false)
+	@Column(name = "regex", length = 512, updatable = true, nullable = false)
 	public String regex;
 
 	@Column(name = "selection_grp", length = 512, updatable = true, nullable = true)
