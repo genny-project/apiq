@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
@@ -84,7 +85,6 @@ public class ImportResource {
 
 	@Inject
 	UserTransaction userTransaction;
-	
 
 	@OPTIONS
 	public Response opt() {
@@ -93,7 +93,7 @@ public class ImportResource {
 
 	@GET
 	@Path("/attributes")
-	@Transactional
+//	@Transactional
 	public Response importAttributes(@Context UriInfo uriInfo, @QueryParam("url") String externalGennyUrl) {
 		GennyToken userToken = new GennyToken(accessToken.getRawToken());
 		if (userToken == null) {
@@ -105,8 +105,12 @@ public class ImportResource {
 		}
 
 		log.info("External Genny Url = " + externalGennyUrl);
-		String jsonString;
 		try {
+			userTransaction.setTransactionTimeout(3600);
+			userTransaction.begin();
+
+			String jsonString;
+
 			jsonString = QwandaUtils.apiGet(externalGennyUrl + "/qwanda/attributes", accessToken.getRawToken());
 			if (!StringUtils.isBlank(jsonString)) {
 
@@ -137,18 +141,46 @@ public class ImportResource {
 					}
 				}
 			}
-
+			userTransaction.commit();
+			log.info("Finished import");
 			return Response.status(Status.OK).build();
+
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RollbackException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (HeuristicMixedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (HeuristicRollbackException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (IOException e) {
-			return Response.status(Status.BAD_REQUEST).build();
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		return Response.status(Status.BAD_REQUEST).build();
 
 	}
 
 	@GET
 	@Path("/baseentitys")
-	//@Transactional
-	//@TransactionConfiguration()
+	// @Transactional
+	// @TransactionConfiguration()
 	public Response importBaseentitys(@Context UriInfo uriInfo, @QueryParam("url") String externalGennyUrl) {
 		GennyToken userToken = new GennyToken(accessToken.getRawToken());
 		if (userToken == null) {
@@ -180,169 +212,167 @@ public class ImportResource {
 //				JsonArray attributeValues = tradeElement.getAsJsonArray();
 //
 
-					List<BaseEntity> baseentitys = new ArrayList<>();
-				
-					/* we loop through the attribute values */
-					int size = items.size();
-					for (int i = 0; i < items.size(); i++) {
+				List<BaseEntity> baseentitys = new ArrayList<>();
 
-						BaseEntity be = new BaseEntity();
+				/* we loop through the attribute values */
+				int size = items.size();
+				for (int i = 0; i < items.size(); i++) {
 
-						JsonObject beJson = items.get(i).getAsJsonObject();
-						String code = beJson.get("code").getAsString();
-						LocalDateTime created = Value.getDateTime(beJson.get("created"));
-						LocalDateTime updated = Value.getDateTime(beJson.get("updated"));
-						String name = beJson.get("name").getAsString();
-						String realm = beJson.get("realm").getAsString();
-						
-						be.realm = realm;
-						be.active = true;
-						be.code = code;
-						be.name = name;
-						be.created = created;
-						be.updated = updated;
-					//	be.persist();
+					BaseEntity be = new BaseEntity();
 
-						JsonArray bes = beJson.getAsJsonArray("baseEntityAttributes");
+					JsonObject beJson = items.get(i).getAsJsonObject();
+					String code = beJson.get("code").getAsString();
+					LocalDateTime created = Value.getDateTime(beJson.get("created"));
+					LocalDateTime updated = Value.getDateTime(beJson.get("updated"));
+					String name = beJson.get("name").getAsString();
+					String realm = beJson.get("realm").getAsString();
 
-						for (int e = 0; e < bes.size(); e++) {
-							JsonObject ea = bes.get(e).getAsJsonObject();
-							
-							String attributeCode = ea.get("attributeCode").getAsString();
-							String attributeName = ea.get("attributeName").getAsString();
-							Boolean readonly = ea.get("readonly").getAsBoolean();
-							Boolean inferred = ea.get("inferred").getAsBoolean();
-							Boolean privacyFlag = ea.get("privacyFlag").getAsBoolean();
-							Double weight = ea.get("weight").getAsDouble();
-							
-							LocalDateTime createdEA = Value.getDateTime(ea.get("created"));
-							LocalDateTime updatedEA = Value.getDateTime(ea.get("updated"));
-							
-							Value value = Value.getValueFromJsonObject(ea);
-							
-							// String valueString =
-							EntityAttribute eat = new EntityAttribute();
-							eat.realm = be.realm;
-							eat.attributeCode = attributeCode;
-							eat.attributeName = attributeName;
-							Attribute attribute = Attribute.find("code", attributeCode).firstResult();
-							eat.attribute = attribute;
-							eat.readonly = readonly;
-							eat.inferred = inferred;
-							eat.privacyFlag = privacyFlag;
-							eat.setWeight(weight);
-							eat.created = createdEA;
-							eat.updated = updatedEA;
-							eat.value = value;
-							eat.baseentity = be;
-							eat.baseEntityCode = be.code;
-						//	eat.persist();
-							
-							be.baseEntityAttributes.add(eat);
-						}
-						
-						
+					be.realm = realm;
+					be.active = true;
+					be.code = code;
+					be.name = name;
+					be.created = created;
+					be.updated = updated;
+					// be.persist();
 
-						JsonArray links = beJson.getAsJsonArray("links");
-						for (int link = 0; link < links.size(); link++) {
-							JsonObject l = links.get(link).getAsJsonObject();
-							
-							JsonObject lnk = l.getAsJsonObject("link");
-							String attributeCode = lnk.get("attributeCode").getAsString();
-							String targetCode = lnk.get("targetCode").getAsString();
-							String sourceCode = lnk.get("sourceCode").getAsString();
-							JsonElement lnkJE = lnk.get("linkValue");
-							String linkValue = null;
-							if (lnkJE != null) {
-								linkValue = lnkJE.getAsString();
-							}
-							
-							LocalDateTime createdEE = Value.getDateTime(l.get("created"));
-							Value value = Value.getValueFromJsonObject(l);
-							
-							EntityEntity ee = new EntityEntity();
-							Attribute attribute = Attribute.find("code", attributeCode).firstResult();
-							if (attribute == null) {
-								log.error("NO ATTRIBUTE FOUND FOR ["+attributeCode+"] with "+Attribute.count()+" attributes");
-								DataType dtt = new DataType(BaseEntity.class);
-								attribute = new Attribute(attributeCode,attributeCode, dtt);
-								//attribute.persist();
-							}
-							ee.realm = be.realm;
-							ee.attribute = attribute;
-							ee.attributeCode = attributeCode;
-							ee.sourceCode = sourceCode;
-							ee.targetCode = targetCode;
-							ee.created = createdEE;
-							ee.value.dataType = attribute.dataType;
-							ee.value.valueString = linkValue;
-							ee.value.weight = value.weight;
-							
-							ee.link.attributeCode = attributeCode;
-							ee.link.linkValue = linkValue;
-							ee.link.sourceCode = sourceCode;
-							ee.link.targetCode = targetCode;
-							ee.link.weight = value.weight;
+					JsonArray bes = beJson.getAsJsonArray("baseEntityAttributes");
 
-							//ee.persist();
-							be.links.add(ee);
-						}
+					for (int e = 0; e < bes.size(); e++) {
+						JsonObject ea = bes.get(e).getAsJsonObject();
 
-						JsonArray questions = beJson.getAsJsonArray("questions");
+						String attributeCode = ea.get("attributeCode").getAsString();
+						String attributeName = ea.get("attributeName").getAsString();
+						Boolean readonly = ea.get("readonly").getAsBoolean();
+						Boolean inferred = ea.get("inferred").getAsBoolean();
+						Boolean privacyFlag = ea.get("privacyFlag").getAsBoolean();
+						Double weight = ea.get("weight").getAsDouble();
 
-						for (int q = 0; q < questions.size(); q++) {
-							JsonObject questionQ = questions.get(q).getAsJsonObject();
-							String valueStringQ = questionQ.get("valueString").getAsString();
-							Double weightQ = questionQ.get("weight").getAsDouble();
-							JsonObject lnkQ = questionQ.getAsJsonObject("link");
-							String attributeCodeQ = lnkQ.get("attributeCode").getAsString();
-							String targetCodeQ = lnkQ.get("targetCode").getAsString();
-							String sourceCodeQ = lnkQ.get("sourceCode").getAsString();
-							Value value = Value.getValueFromJsonObject(lnkQ);
-							
-							EntityQuestion eq = new EntityQuestion();
-							eq.link.attributeCode = attributeCodeQ;
-							JsonElement je = lnkQ.get("linkValue");
-							if (je != null) {
-								eq.link.linkValue = je.getAsString();
-							}
-							eq.link.sourceCode = sourceCodeQ;
-							eq.link.targetCode = targetCodeQ;
-							eq.link.weight = value.weight;
-							eq.value.valueString = valueStringQ;
-							eq.value.weight = weightQ;
-							eq.persist();
-							be.questions.add(eq);
-						}
-					//	be.persist();
-						log.info(i+" of "+size+" -> "+code);
-						baseentitys.add(be);
+						LocalDateTime createdEA = Value.getDateTime(ea.get("created"));
+						LocalDateTime updatedEA = Value.getDateTime(ea.get("updated"));
+
+						Value value = Value.getValueFromJsonObject(ea);
+
+						// String valueString =
+						EntityAttribute eat = new EntityAttribute();
+						eat.realm = be.realm;
+						eat.attributeCode = attributeCode;
+						eat.attributeName = attributeName;
+						Attribute attribute = Attribute.find("code", attributeCode).firstResult();
+						eat.attribute = attribute;
+						eat.readonly = readonly;
+						eat.inferred = inferred;
+						eat.privacyFlag = privacyFlag;
+						eat.setWeight(weight);
+						eat.created = createdEA;
+						eat.updated = updatedEA;
+						eat.value = value;
+						eat.baseentity = be;
+						eat.baseEntityCode = be.code;
+						// eat.persist();
+
+						be.baseEntityAttributes.add(eat);
 					}
-					
-					
-					log.info("SAVING!");
-					
-					try {
-						userTransaction.setTransactionTimeout(10000);
-					//	userTransaction.setBatchSize(100);
-				        // Don't bother getting generated keys
-					//	userTransaction.setBatchGetGeneratedKeys(false);
-				        // Skip cascading persist 
-					//	userTransaction.setPersistCascade(false);
-						userTransaction.begin();
-				int i=0;
-				for (BaseEntity b : baseentitys) {
-					
-					if (i % 20 == 0) { // 20, same as the JDBC batch size
-				        // flush a batch of inserts and release memory:
-				        b.persistAndFlush();
-				    } else {
-				    	b.persist();
-				    }
-					log.info("SAVING "+(i++)+" of "+size+" -> "+b.code);
+
+					JsonArray links = beJson.getAsJsonArray("links");
+					for (int link = 0; link < links.size(); link++) {
+						JsonObject l = links.get(link).getAsJsonObject();
+
+						JsonObject lnk = l.getAsJsonObject("link");
+						String attributeCode = lnk.get("attributeCode").getAsString();
+						String targetCode = lnk.get("targetCode").getAsString();
+						String sourceCode = lnk.get("sourceCode").getAsString();
+						JsonElement lnkJE = lnk.get("linkValue");
+						String linkValue = null;
+						if (lnkJE != null) {
+							linkValue = lnkJE.getAsString();
+						}
+
+						LocalDateTime createdEE = Value.getDateTime(l.get("created"));
+						Value value = Value.getValueFromJsonObject(l);
+
+						EntityEntity ee = new EntityEntity();
+						Attribute attribute = Attribute.find("code", attributeCode).firstResult();
+						if (attribute == null) {
+							log.error("NO ATTRIBUTE FOUND FOR [" + attributeCode + "] with " + Attribute.count()
+									+ " attributes");
+							DataType dtt = new DataType(BaseEntity.class);
+							attribute = new Attribute(attributeCode, attributeCode, dtt);
+							// attribute.persist();
+						}
+						ee.realm = be.realm;
+						ee.attribute = attribute;
+						ee.attributeCode = attributeCode;
+						ee.sourceCode = sourceCode;
+						ee.targetCode = targetCode;
+						ee.created = createdEE;
+						ee.value.dataType = attribute.dataType;
+						ee.value.valueString = linkValue;
+						ee.value.weight = value.weight;
+
+						ee.link.attributeCode = attributeCode;
+						ee.link.linkValue = linkValue;
+						ee.link.sourceCode = sourceCode;
+						ee.link.targetCode = targetCode;
+						ee.link.weight = value.weight;
+
+						// ee.persist();
+						be.links.add(ee);
+					}
+
+					JsonArray questions = beJson.getAsJsonArray("questions");
+
+					for (int q = 0; q < questions.size(); q++) {
+						JsonObject questionQ = questions.get(q).getAsJsonObject();
+						String valueStringQ = questionQ.get("valueString").getAsString();
+						Double weightQ = questionQ.get("weight").getAsDouble();
+						JsonObject lnkQ = questionQ.getAsJsonObject("link");
+						String attributeCodeQ = lnkQ.get("attributeCode").getAsString();
+						String targetCodeQ = lnkQ.get("targetCode").getAsString();
+						String sourceCodeQ = lnkQ.get("sourceCode").getAsString();
+						Value value = Value.getValueFromJsonObject(lnkQ);
+
+						EntityQuestion eq = new EntityQuestion();
+						eq.link.attributeCode = attributeCodeQ;
+						JsonElement je = lnkQ.get("linkValue");
+						if (je != null) {
+							eq.link.linkValue = je.getAsString();
+						}
+						eq.link.sourceCode = sourceCodeQ;
+						eq.link.targetCode = targetCodeQ;
+						eq.link.weight = value.weight;
+						eq.value.valueString = valueStringQ;
+						eq.value.weight = weightQ;
+						eq.persist();
+						be.questions.add(eq);
+					}
+					// be.persist();
+					log.info(i + " of " + size + " -> " + code);
+					baseentitys.add(be);
 				}
+
+				log.info("SAVING!");
+
+				try {
+					userTransaction.setTransactionTimeout(10000);
+					// userTransaction.setBatchSize(100);
+					// Don't bother getting generated keys
+					// userTransaction.setBatchGetGeneratedKeys(false);
+					// Skip cascading persist
+					// userTransaction.setPersistCascade(false);
+					userTransaction.begin();
+					int i = 0;
+					for (BaseEntity b : baseentitys) {
+
+						if (i % 20 == 0) { // 20, same as the JDBC batch size
+							// flush a batch of inserts and release memory:
+							b.persistAndFlush();
+						} else {
+							b.persist();
+						}
+						log.info("SAVING " + (i++) + " of " + size + " -> " + b.code);
+					}
 					userTransaction.commit();
-					log.info("Finished saving "+baseentitys.size()+" bes");
+					log.info("Finished saving " + baseentitys.size() + " bes");
 				} catch (SystemException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -381,7 +411,6 @@ public class ImportResource {
 
 	}
 
-	
 	private String fixJson(String resultStr) {
 		String resultStr2 = resultStr.replaceAll(Pattern.quote("\\\""), Matcher.quoteReplacement("\""));
 		String resultStr3 = resultStr2.replaceAll(Pattern.quote("\\n"), Matcher.quoteReplacement("\n"));
@@ -408,7 +437,5 @@ public class ImportResource {
 	void onShutdown(@Observes ShutdownEvent ev) {
 		log.info("Import Endpoint Shutting down");
 	}
-
-
 
 }
