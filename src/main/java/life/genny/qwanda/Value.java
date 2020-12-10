@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.json.bind.annotation.JsonbTransient;
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
@@ -46,7 +47,8 @@ public class Value implements Serializable,Comparable<Value> {
 	public LocalTime valueTime;
 	public Boolean valueBoolean;
 
-	@Type(type = "text")
+//	  @Column(name="valueString" , length = 65535, columnDefinition="varchar")
+	  @Type(type="text")
 	public String valueString;
 
 	public Boolean expired = false;

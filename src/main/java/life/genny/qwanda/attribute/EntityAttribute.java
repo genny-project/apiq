@@ -38,12 +38,12 @@ import life.genny.qwanda.entity.BaseEntity;
 
 @Table(name = "qbaseentity_attribute",
 indexes = {
-		@Index(columnList = "baseEntityCode", name = "ba_idx"),
-		@Index(columnList = "attributeCode", name = "ba_idx"),
-		@Index(columnList = "valueString", name = "ba_idx"),
-        @Index(columnList = "valueBoolean", name = "ba_idx")
-    },
-uniqueConstraints = @UniqueConstraint(columnNames = {"attributeCode","baseEntityCode","realm"})
+		@Index(name = "ba_idx", columnList = "baseEntityCode"),
+		@Index(name = "bb_idx", columnList = "attributeCode"),
+		@Index(name = "bc_idx", columnList = "valueString"),
+				@Index(name = "bd_idx", columnList = "valueBoolean"),
+				@Index(name = "bae_idx", columnList = "realm, ATTRIBUTE_ID,BASEENTITY_ID", unique = true)
+    }
 )
 
 @Cacheable
@@ -70,6 +70,7 @@ public class EntityAttribute extends PanacheEntity {
 //	@JsonbTypeAdapter(AttributeAdapter.class)
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ATTRIBUTE_ID", nullable = false)
 	public Attribute attribute;
 
 	@JsonbTransient
