@@ -26,7 +26,7 @@ services:
     environment:
       - VIRTUAL_HOST=apiqn.genny.life
       - VIRTUAL_PORT=8097
-      - FULL_MYSQL_URL=127.0.0.1:3310/gennydb?zeroDateTimeBehavior=convertToNull
+      - FULL_MYSQL_URL=10.123.123.123:3310/gennydb?zeroDateTimeBehavior=convertToNull
     ports:
       - 8296:8096
       - 5106:5006
